@@ -1,0 +1,44 @@
+<div class="selection-container">
+  <h2>Seleção de Jogadores</h2>
+
+  <div class="form-group">
+    <label for="playerCount">Quantidade de Jogadores por Time:</label>
+    <input type="number" id="playerCount" min="1" [(ngModel)]="playerCount" />
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label for="players">Jogadores:</label>
+      <textarea
+        id="players"
+        [(ngModel)]="playersText"
+        (change)="updatePlayersFromTextarea()"
+        placeholder="Digite os nomes dos jogadores (um por linha)"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="goalkeepers">Goleiros:</label>
+      <textarea
+        id="goalkeepers"
+        [(ngModel)]="goalkeepersText"
+        (change)="updateGoalkeepersFromTextarea()"
+        placeholder="Digite os nomes dos goleiros (um por linha)"></textarea>
+    </div>
+  </div>
+
+  <!-- Caixa de Jogadores com opção de Cabeça de Chave -->
+  <div class="players-box" *ngIf="players.length > 0">
+    <h3>Marcar Cabeça de Chave</h3>
+    <div class="players-list">
+      <label *ngFor="let player of players" class="player-checkbox">
+        <input
+          type="checkbox"
+          [checked]="isHeadToHead(player)"
+          (change)="toggleHeadToHead(player)">
+        <span [class.head-to-head]="isHeadToHead(player)">{{ player }}</span>
+      </label>
+    </div>
+  </div>
+
+  <button (click)="onGenerateTeams()">Gerar Times</button>
+</div>

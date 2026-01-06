@@ -1,0 +1,69 @@
+<div class="display-container">
+  <!-- Cronômetro -->
+  <div class="timer-section" *ngIf="teams.length > 0">
+    <div class="timer-display">
+      <h2>⏱️ Tempo de Jogo</h2>
+      <div class="timer-value">{{ formattedTime }}</div>
+      <div class="timer-buttons">
+        <button (click)="toggleTimer()" [class.playing]="isRunning" class="btn-timer-toggle">
+          {{ isRunning ? '⏸️ Pausar' : '▶️ Iniciar' }}
+        </button>
+        <button (click)="resetTimer()" class="btn-timer-reset">🔄 Resetar</button>
+      </div>
+    </div>
+  </div>
+
+
+
+  <h2>Times Montados</h2>
+  <div class="teams-grid" *ngIf="teams.length > 0">
+    <div class="team-card" *ngFor="let team of teams">
+      <div class="team-content">
+        <h2>{{ team.name }}</h2>
+        <div class="team-stats">
+          <div class="stat-item">
+            <label for="goals-{{ team.name }}">⚽ Gols:</label>
+            <input
+              [id]="'goals-' + team.name"
+              type="number"
+              [value]="getGoals(team)"
+              (change)="onGoalsChange(team, $event)"
+              min="0"
+              class="goals-input">
+          </div>
+          <button
+            (click)="setWinner(team)"
+            [disabled]="!canSetWinner(team)"
+            class="btn-winner">
+             🏆 Marcar Vencedor
+          </button>
+        </div>
+        <div class="team-goalkeeper">
+          <strong>⚽ Goleiro:</strong>
+          <p>{{ team.goalkeeper }}</p>
+        </div>
+        <div class="team-players">
+          <strong>👥 Jogadores:</strong>
+          <ul>
+            <li *ngFor="let player of team.players" [class.head-to-head-player]="isHeadToHead(player)">
+              <span *ngIf="isHeadToHead(player)" class="star">⭐</span>
+              {{ player }}
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div>
+    &nbsp;
+  </div>
+  <!-- Botão de Empate -->
+  <div class="draw-button-section" *ngIf="teams.length > 0">
+    <button (click)="setDraw()" class="btn-draw" [class.active]="teams.length > 0 && teams[0]">
+      {{ teams.length > 0 && teams[0] ? '🤝 Empate Marcado' : '🤝 Marcar Empate' }}
+    </button>
+  </div>
+  <div *ngIf="teams.length === 0" class="empty-state">
+    <p>Nenhum time foi montado ainda. Acesse a aba "Seleção de Jogadores" para gerar times.</p>
+  </div>
+</div>

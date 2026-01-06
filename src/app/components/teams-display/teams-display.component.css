@@ -1,0 +1,348 @@
+.display-container {
+  padding: 20px;
+}
+
+/* Estilos do Cronômetro */
+.timer-section {
+  margin-bottom: 30px;
+  display: flex;
+  justify-content: center;
+}
+
+.draw-button-section {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.btn-draw {
+  padding: 12px 28px;
+  font-size: 16px;
+  font-weight: 600;
+  background-color: white;
+  color: #667eea;
+  border: 3px solid #667eea;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-draw:hover {
+  background-color: #667eea;
+  color: white;
+  transform: scale(1.05);
+}
+
+.btn-draw.active {
+  background-color: #667eea;
+  color: white;
+  box-shadow: 0 8px 16px rgba(102, 126, 234, 0.4);
+}
+
+.timer-display {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  padding: 30px 40px;
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+  text-align: center;
+  min-width: 300px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.timer-display:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
+}
+
+.timer-display h2 {
+  margin: 0 0 20px 0;
+  color: white;
+  font-size: 18px;
+  border: none;
+  padding: 0;
+}
+
+.timer-value {
+  font-size: 64px;
+  font-weight: bold;
+  color: white;
+  font-family: 'Courier New', monospace;
+  margin: 20px 0;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  letter-spacing: 4px;
+}
+
+.timer-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.btn-timer-toggle,
+.btn-timer-reset {
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-timer-toggle {
+  background-color: #ffc107;
+  color: #333;
+}
+
+.btn-timer-toggle:hover {
+  background-color: #ffb300;
+  transform: scale(1.05);
+}
+
+.btn-timer-toggle.playing {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn-timer-toggle.playing:hover {
+  background-color: #c82333;
+}
+
+.btn-timer-reset {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 2px solid white;
+}
+
+.btn-timer-reset:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+.display-container h2 {
+  color: #28a745;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #28a745;
+  padding-bottom: 10px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  color: #666;
+  font-size: 16px;
+}
+
+.teams-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.team-card {
+  border: 3px solid #28a745;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #f0fff4 0%, #ffffff 100%);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.team-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+}
+
+.team-header {
+  background-color: #28a745;
+  color: white;
+  padding: 15px;
+  text-align: center;
+}
+
+.team-header h3 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.team-content {
+  padding: 20px;
+}
+
+.team-goalkeeper {
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.team-goalkeeper strong {
+  color: #28a745;
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.team-goalkeeper p {
+  margin: 0;
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  background-color: #fff3cd;
+  padding: 8px 12px;
+  border-radius: 4px;
+  border-left: 4px solid #ffc107;
+}
+
+.team-players strong {
+  color: #28a745;
+  display: block;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.team-players ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.team-players li {
+  padding: 8px 12px;
+  margin-bottom: 6px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  border-left: 4px solid #007bff;
+  font-size: 14px;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.team-players li.head-to-head-player {
+  background-color: #fff8e1;
+  border-left-color: #ffc107;
+  font-weight: 600;
+  color: #f57c00;
+}
+
+.star {
+  font-size: 16px;
+}
+/* Estilos para Gols e Vencedor */
+.team-stats {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  align-items: center;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.stat-item label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #28a745;
+}
+
+.goals-input {
+  padding: 8px 12px;
+  font-size: 16px;
+  border: 2px solid #28a745;
+  border-radius: 6px;
+  text-align: center;
+  font-weight: bold;
+  width: 70px;
+  transition: all 0.3s ease;
+}
+
+.goals-input:focus {
+  outline: none;
+  border-color: #28a745;
+  box-shadow: 0 0 8px rgba(40, 167, 69, 0.3);
+  background-color: #f0fff4;
+}
+
+.btn-winner {
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  background-color: white;
+  color: #ffc107;
+  border: 2px solid #ffc107;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.btn-winner:hover:not(:disabled) {
+  background-color: #ffc107;
+  color: #333;
+  transform: scale(1.05);
+}
+
+.btn-winner:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  color: #ccc;
+  border-color: #ccc;
+}
+
+.btn-winner.active {
+  background-color: #28a745;
+  border-color: #28a745;
+  color: white;
+}
+
+.btn-winner.active:hover {
+  background-color: #218838;
+  border-color: #218838;
+}
+
+.winner-badge {
+  display: inline-block;
+  background-color: #ffc107;
+  color: #333;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  margin-left: 10px;
+}
+
+.team-card.winner-card {
+  border-color: #ffc107;
+  box-shadow: 0 8px 16px rgba(255, 193, 7, 0.3);
+}
+
+.team-header.winner-header {
+  background: linear-gradient(135deg, #ffc107, #ff9800);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.team-header.winner-header h3 {
+  margin: 0;
+}

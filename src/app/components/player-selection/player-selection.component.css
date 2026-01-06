@@ -1,0 +1,119 @@
+.selection-container {
+  padding: 20px;
+}
+
+.selection-container h2 {
+  color: #007bff;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #007bff;
+  padding-bottom: 10px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+input[type="number"],
+textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-family: Arial, sans-serif;
+  box-sizing: border-box;
+}
+
+textarea {
+  min-height: 150px;
+  resize: vertical;
+}
+
+.form-row {
+  display: flex;
+  gap: 20px;
+}
+
+.form-row .form-group {
+  flex: 1;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+/* Estilos para a caixa de jogadores */
+.players-box {
+  border: 2px solid #007bff;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px 0;
+  background-color: #f8f9fa;
+}
+
+.players-box h3 {
+  margin-top: 0;
+  color: #007bff;
+  border-bottom: 2px solid #007bff;
+  padding-bottom: 10px;
+}
+
+.players-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.player-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.player-checkbox:hover {
+  background-color: #e2e6ea;
+}
+
+.player-checkbox input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+  cursor: pointer;
+}
+
+.player-checkbox span {
+  font-size: 16px;
+  color: #333;
+}
+
+.player-checkbox span.head-to-head {
+  font-weight: bold;
+  color: #ffc107;
+  background-color: #fff3cd;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border-left: 4px solid #ffc107;
+}
