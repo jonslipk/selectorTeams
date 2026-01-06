@@ -202,7 +202,7 @@ export class TeamsDisplayComponent implements OnInit, OnDestroy {
     console.log('remainingPlayers antes:', this.remainingPlayers);
 
     // Adicionar os jogadores do time que perdeu ao final da lista de jogadores sem time
-
+    this.remainingPlayers.push(...loserTeam.players);
 
     console.log('remainingPlayers depois de push:', this.remainingPlayers);
     console.log('Quantidade necessária:', 5);
@@ -234,7 +234,7 @@ export class TeamsDisplayComponent implements OnInit, OnDestroy {
     winnerTeam.name = 'Time 1';
     this.teams = [winnerTeam, newTeam];
 
-     this.remainingPlayers.push(...loserTeam.players);
+
 
     // Resetar gols e status
     this.teams.forEach(t => {
