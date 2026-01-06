@@ -420,3 +420,165 @@
             margin-bottom: 10px;
             opacity: 0.5;
         }
+
+/* ===================================
+   MEDIA QUERIES - RESPONSIVIDADE APP
+   =================================== */
+
+/* Tablets e Dispositivos Menores (768px) */
+@media (max-width: 768px) {
+  .header {
+    padding: 20px 15px;
+  }
+
+  .header h1 {
+    font-size: 24px;
+  }
+
+  .tab-button {
+    padding: 14px 12px;
+    font-size: 14px;
+  }
+
+  .add-players-section {
+    margin: 15px;
+    padding: 20px;
+  }
+
+  .form-group-inline {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .btn-add-player {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+}
+
+/* Smartphones (480px e abaixo) */
+@media (max-width: 480px) {
+  /* Container e Header */
+  .header {
+    padding: 15px 10px;
+  }
+
+  .header h1 {
+    font-size: 20px;
+  }
+
+  /* Navegação de Abas */
+  .tabs-navigation {
+    padding: 0;
+  }
+
+  .tab-button {
+    padding: 12px 8px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  /* Conteúdo */
+  .tab-pane {
+    min-height: calc(100vh - 160px);
+  }
+
+  /* Seção de Adicionar Jogadores */
+  .add-players-section {
+    margin: 10px;
+    padding: 15px;
+    border-radius: 6px;
+  }
+
+  .add-players-section h2 {
+    font-size: 18px;
+    margin-bottom: 15px;
+  }
+
+  .add-players-form {
+    gap: 10px;
+  }
+
+  .form-group-inline {
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .input-new-player {
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .btn-add-player {
+    padding: 10px 15px;
+    font-size: 13px;
+    width: 100%;
+  }
+
+  .new-players-preview {
+    padding: 12px;
+    border-radius: 6px;
+  }
+
+  .preview-title {
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+
+  /* Tabelas */
+  .remaining-players-table {
+    font-size: 12px;
+  }
+
+  .remaining-players-table thead {
+    font-size: 12px;
+  }
+
+  .remaining-players-table th,
+  .remaining-players-table td {
+    padding: 8px 6px;
+  }
+
+  .player-badge {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+
+  .btn-remove {
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+
+  .empty-state {
+    padding: 30px 15px;
+    font-size: 13px;
+  }
+
+  .empty-state-icon {
+    font-size: 32px;
+    margin-bottom: 8px;
+  }
+}
+
+/* Ultra-pequenos (menos de 380px) */
+@media (max-width: 380px) {
+  .header h1 {
+    font-size: 18px;
+  }
+
+  .tab-button {
+    padding: 10px 6px;
+    font-size: 12px;
+  }
+
+  .add-players-section {
+    margin: 8px;
+    padding: 12px;
+  }
+
+  .input-new-player,
+  .btn-add-player {
+    font-size: 13px;
+  }
+}
