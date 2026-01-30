@@ -31,8 +31,6 @@ export class TeamsDisplayComponent implements OnInit, OnDestroy {
   goalKeepersTeam: string[] = []
   playerModal: any;
   modalAberto = false;
-  golsPartida: number = 0;
-
 
 
 
@@ -54,9 +52,12 @@ export class TeamsDisplayComponent implements OnInit, OnDestroy {
     // reset select to default (if present)
     try{ event.target.value = ''; }catch(e){}
 
-    if(action === 'gol'){
-      this.golsPartida++;
-      this.setGoals(this.teams.find(t => t.players.includes(player))!, this.golsPartida.toString());
+    // Increment goals for the player's team when action is 'gol'
+    if (action === 'gol') {
+      const team = this.teams.find(t => t.players.includes(player));
+      if (team) {
+        team.goals = (team.goals || 0) + 1;
+      }
     }
   }
 
@@ -139,7 +140,6 @@ export class TeamsDisplayComponent implements OnInit, OnDestroy {
   setWinner(team: Team): void {
     console.log('setWinner chamado com time:', team.name);
     team.isWinner = true;
-    this.golsPartida = 0;
 
     console.log('setWinner times:', this.teams)
 
@@ -165,7 +165,6 @@ export class TeamsDisplayComponent implements OnInit, OnDestroy {
 
   setDraw(): void {
 
-    this.golsPartida = 0;
     this.teams.forEach(t => t.isWinner = false);
     this.teams.forEach(t => t.players.forEach(p => this.playersTeam.push(p)))
     this.teams.forEach(t => this.goalKeepersTeam.push(t.goalkeeper))
