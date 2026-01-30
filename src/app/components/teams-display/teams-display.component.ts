@@ -18,6 +18,10 @@ export class TeamsDisplayComponent implements OnInit, OnDestroy {
   @Input() headToHeadPlayers: Set<string> = new Set();
   @Input() remainingPlayers: string[] = [];
   @Input() playCount: number = 0
+  @Output() playerAction: EventEmitter<{player: string, action: string}> = new EventEmitter();
+  @Input() lastActionsByPlayer: { [player: string]: string[] } = {};
+  @Output() winnerDeclared: EventEmitter<Team> = new EventEmitter();
+  @Output() drawDeclared: EventEmitter<void> = new EventEmitter();
 
   // Cronômetro
   timeRemaining: number = 420; // 7 minutos em segundos
@@ -25,6 +29,12 @@ export class TeamsDisplayComponent implements OnInit, OnDestroy {
   private intervalId: any;
   playersTeam: string[] = []
   goalKeepersTeam: string[] = []
+  playerModal: any;
+  modalAberto = false;
+  golsPartida: number = 0;
+
+
+
 
   ngOnInit(): void {
     this.resetTimer();
@@ -36,6 +46,52 @@ export class TeamsDisplayComponent implements OnInit, OnDestroy {
     }
   }
 
+  selectDetails(player:any, event:any){
+    const action = event?.target?.value;
+    if(!action) return;
+    // emit { player, action } for parent to update scouts and action history
+    this.playerAction.emit({ player, action });
+    // reset select to default (if present)
+    try{ event.target.value = ''; }catch(e){}
+
+    if(action === 'gol'){
+      this.golsPartida++;
+      this.setGoals(this.teams.find(t => t.players.includes(player))!, this.golsPartida.toString());
+    }
+  }
+
+  getActionIcon(action: string): string{
+    switch(action){
+      case 'gol': return '⚽';
+      case 'ruim': return '⚠️';
+      case 'contra': return '❌';
+      case 'passe': return '🅰️';
+      default: return '';
+    }
+  }
+
+  changePlayer(playerValue:any){
+    this.teams.forEach(team => {
+                        const index = team.players.findIndex(p => p === this.playerModal);
+
+                        if (index !== -1) {
+                          team.players.splice(index, 1, playerValue);
+                          this.remainingPlayers.splice(this.remainingPlayers.indexOf(playerValue),1)
+                        }
+    });
+
+  this.remainingPlayers.push(this.playerModal)
+
+  this.modalAberto = false;
+ ;
+}
+
+  abrirModal(substituto:any) {
+    this.playerModal = substituto;
+    this.modalAberto = true;
+  }
+
+
   toggleTimer(): void {
     if (this.isRunning) {
       this.pauseTimer();
@@ -43,6 +99,7 @@ export class TeamsDisplayComponent implements OnInit, OnDestroy {
       this.startTimer();
     }
   }
+
 
   startTimer(): void {
     if (this.isRunning || this.timeRemaining === 0) return;
@@ -87,6 +144,7 @@ export class TeamsDisplayComponent implements OnInit, OnDestroy {
 
     // Emitir evento com o time vencedor
     this.onWinnerSelected(team);
+    this.winnerDeclared.emit(team);
 
     this.teams.forEach(t => t.isWinner = false);
     // Zerar gols
@@ -155,16 +213,20 @@ export class TeamsDisplayComponent implements OnInit, OnDestroy {
       this.playersTeam = []
 
       console.log("teams gerados depois do empate", this.teams)
+      this.drawDeclared.emit();
 
   }
 
   onGoalsChange(team: Team, event: any): void {
-    const value = event.target.value;
-    this.setGoals(team, parseInt(value, 10));
+    const action = event.target.value;
+    const gols  = 0
+    const value = action === 'gol' ? gols + 1 : gols;
+    this.setGoals(team, value.toString());
   }
 
   setGoals(team: Team, goals: any): void {
     const numGoals = parseInt(goals, 10);
+    console.log("setGoals chamado com time:", team.name, "e gols:", numGoals);
     team.goals = Math.max(0, isNaN(numGoals) ? 0 : numGoals);
   }
 

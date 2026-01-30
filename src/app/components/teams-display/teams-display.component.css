@@ -1,3 +1,22 @@
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  min-width: 300px;
+}
+
 .display-container {
   padding: 20px;
 }
@@ -231,6 +250,43 @@
   gap: 8px;
 }
 
+.player-name{
+  flex: 1 1 auto;
+  font-weight: 600;
+}
+
+.action-icon{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:28px;
+  height:28px;
+  border-radius:6px;
+  background:#ffffff;
+  border:1px solid #e6eef6;
+  margin-left:8px;
+  font-size:16px;
+}
+
+.action-badges{
+  display:flex;
+  gap:6px;
+  margin-left:8px;
+}
+
+.action-badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:22px;
+  height:22px;
+  padding:0 6px;
+  border-radius:6px;
+  background:#ffffff;
+  border:1px solid #e6eef6;
+  font-size:13px;
+}
+
 .team-players li.head-to-head-player {
   background-color: #fff8e1;
   border-left-color: #ffc107;
@@ -421,6 +477,35 @@
   .team-players ul {
     max-height: 180px;
   }
+
+  .team-players li {
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .player-name {
+    min-width: 80px;
+  }
+
+  .action-badges {
+    margin-left: 0;
+    gap: 4px;
+  }
+
+  .action-badge {
+    min-width: 20px;
+    height: 20px;
+    padding: 0 4px;
+    font-size: 11px;
+  }
+
+  .team-players li select,
+  .team-players li button {
+    padding: 5px 8px;
+    font-size: 11px;
+    min-width: auto;
+    flex-shrink: 0;
+  }
 }
 
 /* Smartphones (480px a 767px) */
@@ -578,9 +663,51 @@
   .team-players li {
     padding: 4px 6px;
     margin-bottom: 3px;
-    font-size: 14px;
-    gap: 4px;
+    font-size: 13px;
+    gap: 3px;
+    flex-wrap: wrap;
+    align-items: flex-start;
   }
+
+  .player-name {
+    flex: 0 1 auto;
+    min-width: 70px;
+    font-weight: 600;
+  }
+
+  .action-badges {
+    display: flex;
+    gap: 2px;
+    margin-left: 0;
+    flex-wrap: wrap;
+  }
+
+  .action-badge {
+    min-width: 18px;
+    height: 18px;
+    padding: 0 3px;
+    border-radius: 3px;
+    font-size: 10px;
+    flex-shrink: 0;
+  }
+
+  .team-players li select {
+    padding: 4px 6px;
+    font-size: 11px;
+    min-width: 65px;
+    flex-shrink: 0;
+    border: 1px solid #ccc;
+  }
+
+  .team-players li button {
+    padding: 4px 6px;
+    font-size: 11px;
+    min-width: 28px;
+    flex-shrink: 0;
+    background: transparent;
+    border: 1px solid #ddd;
+  }
+*** End Patch
 
   .star {
     font-size: 12px;
@@ -658,8 +785,47 @@
     padding: 5px 8px;
   }
 
-  .team-goalkeeper strong,
   .team-players strong {
     font-size: 12px;
+  }
+
+  .team-players ul {
+    max-height: 140px;
+  }
+
+  .team-players li {
+    padding: 3px 4px;
+    font-size: 12px;
+    gap: 2px;
+    flex-wrap: wrap;
+  }
+
+  .player-name {
+    flex: 0 1 auto;
+    min-width: 60px;
+    font-size: 12px;
+  }
+
+  .action-badges {
+    gap: 2px;
+    margin-left: 0;
+  }
+
+  .action-badge {
+    min-width: 16px;
+    height: 16px;
+    padding: 0 2px;
+    font-size: 9px;
+  }
+
+  .team-players li select,
+  .team-players li button {
+    padding: 2px 4px;
+    font-size: 10px;
+    min-width: 24px;
+  }
+
+  .team-players li select {
+    min-width: 60px;
   }
 }

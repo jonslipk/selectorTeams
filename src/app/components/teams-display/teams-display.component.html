@@ -29,7 +29,8 @@
               [value]="getGoals(team)"
               (change)="onGoalsChange(team, $event)"
               min="0"
-              class="goals-input">
+              class="goals-input"
+              readonly>
           </div>
           <button
             (click)="setWinner(team)"
@@ -47,7 +48,18 @@
           <ul>
             <li *ngFor="let player of team.players" [class.head-to-head-player]="isHeadToHead(player)">
               <span *ngIf="isHeadToHead(player)" class="star">⭐</span>
-              {{ player }}
+              <span class="player-name">{{ player }}</span>
+              <span class="action-badges" *ngIf="lastActionsByPlayer[player] && lastActionsByPlayer[player].length">
+                <span *ngFor="let a of lastActionsByPlayer[player]" class="action-badge" [title]="a">{{ getActionIcon(a) }}</span>
+              </span>
+              <select name="details" id="details-select" (change)="selectDetails(player, $event)">
+                <option value="">--</option>
+                <option value="gol">⚽ Gol</option>
+                <option value="ruim">⚠️ Jogada ruim</option>
+                <option value="contra">❌ Gol contra</option>
+                <option value="passe">🅰️ Assistência</option>
+              </select>
+              <button (click)="abrirModal(player)">🔄</button>
             </li>
           </ul>
         </div>
@@ -65,5 +77,19 @@
   </div>
   <div *ngIf="teams.length === 0" class="empty-state">
     <p>Nenhum time foi montado ainda. Acesse a aba "Seleção de Jogadores" para gerar times.</p>
+  </div>
+</div>
+
+<div class="modal-backdrop" *ngIf="modalAberto">
+  <div class="modal">
+    <h2>Substituir</h2>
+            <div class="team-players">
+          <strong>👥 Jogadores:</strong>
+          <ul>
+            <li *ngFor="let reserva of remainingPlayers">
+              {{ reserva }} <button (click)="changePlayer(reserva)" >🔄</button>
+            </li>
+          </ul>
+        </div>
   </div>
 </div>

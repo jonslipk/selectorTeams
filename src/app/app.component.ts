@@ -18,16 +18,28 @@ export class AppComponent {
   @ViewChild(PlayerSelectionComponent) playerSelectionComponent!: PlayerSelectionComponent;
 
   title = 'select-teams-fut';
-  activeTab: 'selection' | 'teams' = 'selection';
+  activeTab: 'selection' | 'teams' | 'scouts' = 'selection';
   teams: Team[] = [];
   remainingTeams: Team[] = [];
   remainingPlayers: string[] = [];
   newPlayerInput: string = '';
   playerCount: number = 0;
   allGoalkeepers: string[] = [];
+  scouts: { player: string; pontos: number; gols: number; assistencias: number; actions: { action: string; time: number }[] }[] = [];
+  lastActionsByPlayer: { [player: string]: string[] } = {};
 
-  setActiveTab(tab: 'selection' | 'teams'): void {
+  setActiveTab(tab: 'selection' | 'teams' | 'scouts'): void {
     this.activeTab = tab;
+  }
+
+  onMatchWinner(team: Team){
+    // clear local action badges when a winner is declared
+    this.lastActionsByPlayer = {};
+  }
+
+  onMatchDraw(){
+    // clear local action badges on draw
+    this.lastActionsByPlayer = {};
   }
 
   onGenerateTeams(): void {
@@ -195,6 +207,46 @@ export class AppComponent {
 
   getHeadToHeadPlayers(): Set<string> {
     return this.playerSelectionComponent?.headToHeadPlayers || new Set();
+  }
+
+  onPlayerAction(ev: { player: string; action: string }){
+    const { player, action } = ev;
+    let scout = this.scouts.find(s => s.player === player);
+    const now = Date.now();
+    if (!scout){
+      scout = { player, pontos: 0, gols: 0, assistencias: 0, actions: [] };
+      this.scouts.push(scout);
+    }
+
+    // record action in history
+    scout.actions.push({ action, time: now });
+
+    // also keep local action badges per player (persist across tabs)
+    if (!this.lastActionsByPlayer[player]) this.lastActionsByPlayer[player] = [];
+    this.lastActionsByPlayer[player].push(action);
+    if (this.lastActionsByPlayer[player].length > 8) this.lastActionsByPlayer[player].shift();
+
+    // apply scoring rules
+    switch(action){
+      case 'gol':
+        scout.gols = (scout.gols || 0) + 1;
+        scout.pontos += 3;
+        break;
+      case 'ruim':
+        scout.pontos -= 1;
+        break;
+      case 'contra':
+        scout.pontos -= 2;
+        break;
+      case 'passe':
+        scout.assistencias = (scout.assistencias || 0) + 1;
+        scout.pontos += 2;
+        break;
+    }
+
+    // Keep points non-negative if you prefer
+    // scout.pontos = Math.max(0, scout.pontos);
+    console.log('scouts updated', this.scouts);
   }
 
   getEmptySet(): Set<string> {

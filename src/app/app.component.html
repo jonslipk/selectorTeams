@@ -17,6 +17,12 @@
       (click)="setActiveTab('teams')">
       🏆 Times Montados
     </button>
+    <button
+      class="tab-button"
+      [class.active]="activeTab === 'scouts'"
+      (click)="setActiveTab('scouts')">
+      🏆 Scouts
+    </button>
   </nav>
 
   <!-- Conteúdo das Abas -->
@@ -37,8 +43,10 @@
         [headToHeadPlayers]="getHeadToHeadPlayers()"
         [remainingPlayers]="remainingPlayers"
         [playCount]="playerCount"
-
-        >
+        [lastActionsByPlayer]="lastActionsByPlayer"
+        (playerAction)="onPlayerAction($event)"
+        (winnerDeclared)="onMatchWinner($event)"
+        (drawDeclared)="onMatchDraw()">
       </app-teams-display>
 
 
@@ -79,6 +87,17 @@
           </div>
         </div>
       </div>
+    </div>
+    <div class="tab-pane" *ngIf="activeTab === 'scouts'">
+      <ng-container *ngIf="scouts && scouts.length > 0; else emptyScouts">
+        <app-scouts-display [scouts]="scouts">
+        </app-scouts-display>
+      </ng-container>
+      <ng-template #emptyScouts>
+        <div class="empty-state">
+          <p>Nenhum scout registrado ainda. Selecione ações em 'Times Montados' para começar a registrar.</p>
+        </div>
+      </ng-template>
     </div>
   </main>
 </div>
