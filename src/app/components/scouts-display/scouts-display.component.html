@@ -1,0 +1,41 @@
+<div class="display-container">
+  <h2>Scouts</h2>
+  <div class="table-wrapper">
+    <table class="scouts-table">
+      <thead>
+        <tr>
+          <th>Jogador</th>
+          <th>Pontos</th>
+          <th>Gols</th>
+          <th>Assistências</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container *ngFor="let s of scouts">
+          <tr>
+            <td>{{ s.player }}</td>
+            <td>{{ s.pontos }}</td>
+            <td>{{ s.gols }}</td>
+            <td>{{ s.assistencias }}</td>
+            <td>
+              <button class="btn-actions" (click)="toggleHistory(s.player)">
+                {{ s.actions?.length || 0 }} ▶
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="expandedPlayers.has(s.player)" class="actions-row">
+            <td colspan="5">
+              <div class="actions-list">
+                <strong>Histórico de ações:</strong>
+                <ul>
+                  <li *ngFor="let a of s.actions">{{ a.action }} — {{ a.time | date:'short' }}</li>
+                </ul>
+              </div>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+</div>

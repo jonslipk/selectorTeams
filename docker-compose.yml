@@ -1,0 +1,12 @@
+services:
+  angular:
+    image: angular-dev
+    build: .
+    container_name: angular_dev
+    ports:
+      - "4200:4200"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    stdin_open: true
+    tty: true
