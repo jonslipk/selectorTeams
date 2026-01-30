@@ -44,11 +44,11 @@
   box-sizing: border-box;
 }
 
-/* Explicit column widths to guarantee alignment */
-.scouts-table thead th:first-child{ width: 55%; }
-.scouts-table thead th:nth-child(2){ width: 15%; }
-.scouts-table thead th:nth-child(3){ width: 15%; }
-.scouts-table thead th:nth-child(4){ width: 15%; }
+/* Explicit column widths to guarantee alignment (player column reduced) */
+.scouts-table thead th:first-child{ width: 40%; }
+.scouts-table thead th:nth-child(2){ width: 20%; }
+.scouts-table thead th:nth-child(3){ width: 20%; }
+.scouts-table thead th:nth-child(4){ width: 20%; }
 
 .scouts-table thead th{
 	position: sticky;
@@ -101,23 +101,7 @@
 }
 
 /* actions row */
-.actions-row td{
-	background: #fbfcfe;
-	padding: 10px 16px;
-}
-
-.actions-list ul{
-	margin: 6px 0 0 0;
-	padding-left: 18px;
-}
-
-.btn-actions{
-	background: transparent;
-	border: 1px solid #e6eef6;
-	padding: 6px 8px;
-	border-radius: 6px;
-	cursor: pointer;
-}
+/* history UI removed: styles for actions rows/buttons were removed */
 
 .scouts-table tbody tr:hover{
 	background: rgba(37,99,235,0.06);
@@ -138,4 +122,35 @@
 .scouts-table tbody td:nth-child(n+2){
 	text-align: center;
 	font-variant-numeric: tabular-nums;
+}
+
+/* Responsive: keep table horizontal and allow horizontal scrolling on small screens */
+@media (max-width: 720px) {
+	.table-wrapper {
+		padding: 8px;
+		overflow-x: auto;
+	}
+
+	.scouts-table {
+		min-width: 520px; /* allow table to be wider than viewport and scroll */
+		box-shadow: none;
+		border: 1px solid #e6eef6;
+	}
+
+	.scouts-table thead th,
+	.scouts-table td {
+		padding: 8px 10px;
+		font-size: 13px;
+	}
+
+	.scouts-table thead th:first-child{ width: auto; }
+
+	/* slight adjustments for very small screens */
+	@media (max-width: 380px) {
+		.scouts-table thead th,
+		.scouts-table td {
+			padding: 6px 8px;
+			font-size: 12px;
+		}
+	}
 }

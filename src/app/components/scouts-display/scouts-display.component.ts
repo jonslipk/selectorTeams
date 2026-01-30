@@ -8,7 +8,6 @@ import { Component, OnInit, Input } from '@angular/core';
 export class ScoutsDisplayComponent implements OnInit {
 
   @Input() scouts: Scout[] = [];
-  expandedPlayers: Set<string> = new Set();
 
   constructor() { }
 
@@ -20,11 +19,7 @@ export class ScoutsDisplayComponent implements OnInit {
         { player: 'Jogador 3', pontos: 6,  gols: 1, assistencias: 1, actions: [] }
       ];
     }
-  }
-
-  toggleHistory(player: string){
-    if (this.expandedPlayers.has(player)) this.expandedPlayers.delete(player);
-    else this.expandedPlayers.add(player);
+      // history display removed — actions retained in data but not shown here
   }
 
 }
