@@ -139,6 +139,7 @@ export class TeamsDisplayComponent implements OnInit, OnDestroy {
   setWinner(team: Team): void {
     console.log('setWinner chamado com time:', team.name);
     team.isWinner = true;
+    this.golsPartida = 0;
 
     console.log('setWinner times:', this.teams)
 
@@ -164,7 +165,7 @@ export class TeamsDisplayComponent implements OnInit, OnDestroy {
 
   setDraw(): void {
 
-
+    this.golsPartida = 0;
     this.teams.forEach(t => t.isWinner = false);
     this.teams.forEach(t => t.players.forEach(p => this.playersTeam.push(p)))
     this.teams.forEach(t => this.goalKeepersTeam.push(t.goalkeeper))
