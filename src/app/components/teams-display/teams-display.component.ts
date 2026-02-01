@@ -32,8 +32,6 @@ export class TeamsDisplayComponent implements OnInit, OnDestroy {
   playerModal: any;
   modalAberto = false;
 
-
-
   ngOnInit(): void {
     this.resetTimer();
   }
@@ -52,11 +50,18 @@ export class TeamsDisplayComponent implements OnInit, OnDestroy {
     // reset select to default (if present)
     try{ event.target.value = ''; }catch(e){}
 
+    const team = this.teams.find(t => t.players.includes(player));
     // Increment goals for the player's team when action is 'gol'
     if (action === 'gol') {
-      const team = this.teams.find(t => t.players.includes(player));
       if (team) {
         team.goals = (team.goals || 0) + 1;
+      }
+    }else if(action === 'contra'){
+      if (team) {
+        const opposingTeam = this.teams.find(t => t !== team);
+        if (opposingTeam) {
+          opposingTeam.goals = Math.max(0, (opposingTeam.goals || 0) + 1);
+        }
       }
     }
   }
@@ -84,7 +89,7 @@ export class TeamsDisplayComponent implements OnInit, OnDestroy {
   this.remainingPlayers.push(this.playerModal)
 
   this.modalAberto = false;
- ;
+
 }
 
   abrirModal(substituto:any) {
@@ -138,10 +143,7 @@ export class TeamsDisplayComponent implements OnInit, OnDestroy {
   }
 
   setWinner(team: Team): void {
-    console.log('setWinner chamado com time:', team.name);
     team.isWinner = true;
-
-    console.log('setWinner times:', this.teams)
 
     // Emitir evento com o time vencedor
     this.onWinnerSelected(team);
@@ -244,30 +246,18 @@ export class TeamsDisplayComponent implements OnInit, OnDestroy {
   }
 
   onWinnerSelected(winnerTeam: Team): void {
-    console.log('=== onWinnerSelected CHAMADO ===');
-    console.log('Time vencedor:', winnerTeam);
 
-    console.log('Times:', this.teams);
     this.teams.forEach(t => this.goalKeepersTeam.push(t.goalkeeper))
-
     // Encontrar o time que perdeu
     const loserTeam = this.teams.find(t => t.name !== winnerTeam.name);
-
 
     if (!loserTeam) {
       console.log('Erro: Não encontrado time perdedor');
       return;
     }
 
-    console.log('Time perdedor:', loserTeam.name);
-    console.log('Jogadores do time perdedor:', loserTeam.players);
-    console.log('remainingPlayers antes:', this.remainingPlayers);
-
     // Adicionar os jogadores do time que perdeu ao final da lista de jogadores sem time
     this.remainingPlayers.push(...loserTeam.players);
-
-    console.log('remainingPlayers depois de push:', this.remainingPlayers);
-    console.log('Quantidade necessária:', 5);
 
     // Verificar se consegue montar novo time (apenas verificar jogadores)
     if (this.remainingPlayers.length < 5) {
@@ -283,9 +273,6 @@ export class TeamsDisplayComponent implements OnInit, OnDestroy {
     // Usar um goleiro diferente do Time 1 (vencedor)
     const newGoalkeeper = this.goalKeepersTeam.find(gk => gk !== winnerTeam.goalkeeper) || this.goalKeepersTeam[0];
 
-    console.log('Jogadores do novo time:', newTeamPlayers);
-    console.log('Goleiro do novo time:', newGoalkeeper);
-
     const newTeam: Team = {
       name: 'Time 2',
       players: newTeamPlayers,
@@ -296,16 +283,11 @@ export class TeamsDisplayComponent implements OnInit, OnDestroy {
     winnerTeam.name = 'Time 1';
     this.teams = [winnerTeam, newTeam];
 
-
-
     // Resetar gols e status
     this.teams.forEach(t => {
       t.goals = 0;
       t.isWinner = false;
     });
 
-    console.log('=== NOVO TIME MONTADO ===');
-    console.log('Times agora:', this.teams);
-    console.log('Jogadores restantes após montagem:', this.remainingPlayers);
   }
 }

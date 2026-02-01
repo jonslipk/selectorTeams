@@ -186,6 +186,13 @@
   transform: scale(1.2);
 }
 
+/* Destaque para os primeiros jogadores que podem montar um time */
+.remaining-players-table tbody tr.highlight {
+  background-color: #fff3cd;
+  color: #856404;
+  font-weight: 700;
+}
+
 .btn-apply {
   width: 100%;
   padding: 12px;

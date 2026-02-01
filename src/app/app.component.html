@@ -28,14 +28,14 @@
   <!-- Conteúdo das Abas -->
   <main class="tabs-content">
     <!-- Aba: Seleção de Jogadores -->
-    <div class="tab-pane" *ngIf="activeTab === 'selection'">
+    <div class="tab-pane" [hidden]="activeTab !== 'selection'">
       <app-player-selection
         (generateTeams)="onGenerateTeams()">
       </app-player-selection>
     </div>
 
     <!-- Aba: Times Montados -->
-    <div class="tab-pane" *ngIf="activeTab === 'teams'">
+    <div class="tab-pane" [hidden]="activeTab !== 'teams'">
 
 
       <app-teams-display
@@ -59,13 +59,13 @@
             </tr>
           </thead>
           <tbody id="playersList">
-            <tr *ngFor="let player of remainingPlayers; let i = index">
+            <tr *ngFor="let player of remainingPlayers; let i = index" [class.highlight]="i < playerCount">
              <td colspan="2">
-                        <div class="player-row">
-                            <span class="player-name">{{player}}</span>
-                            <button (click)="removeNewPlayer(i)" class="btn-remove">✕</button>
-                        </div>
-                    </td>
+                  <div class="player-row">
+                    <span class="player-name">{{player}}</span>
+                    <button (click)="removeNewPlayer(i)" class="btn-remove">✕</button>
+                  </div>
+                </td>
             </tr>
 
           </tbody>
@@ -88,7 +88,7 @@
         </div>
       </div>
     </div>
-    <div class="tab-pane" *ngIf="activeTab === 'scouts'">
+    <div class="tab-pane" [hidden]="activeTab !== 'scouts'">
       <ng-container *ngIf="scouts && scouts.length > 0; else emptyScouts">
         <app-scouts-display [scouts]="scouts">
         </app-scouts-display>
