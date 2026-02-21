@@ -79,17 +79,3 @@
     <p>Nenhum time foi montado ainda. Acesse a aba "Seleção de Jogadores" para gerar times.</p>
   </div>
 </div>
-
-<div class="modal-backdrop" *ngIf="modalAberto">
-  <div class="modal">
-    <h2>Substituir</h2>
-            <div class="team-players">
-          <strong>👥 Jogadores:</strong>
-          <ul>
-            <li *ngFor="let reserva of remainingPlayers">
-              {{ reserva }} <button (click)="changePlayer(reserva)" >🔄</button>
-            </li>
-          </ul>
-        </div>
-  </div>
-</div>

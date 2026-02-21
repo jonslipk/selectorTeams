@@ -278,6 +278,20 @@ export class AppComponent {
     //this.buildRemainingTeams();
   }
 
+  // Move um jogador da lista de remainingPlayers uma posição para cima
+  moveRemainingUp(index: number): void {
+    if (index <= 0 || index >= this.remainingPlayers.length) return;
+    const arr = this.remainingPlayers;
+    [arr[index - 1], arr[index]] = [arr[index], arr[index - 1]];
+  }
+
+  // Move um jogador da lista de remainingPlayers uma posição para baixo
+  moveRemainingDown(index: number): void {
+    if (index < 0 || index >= this.remainingPlayers.length - 1) return;
+    const arr = this.remainingPlayers;
+    [arr[index], arr[index + 1]] = [arr[index + 1], arr[index]];
+  }
+
   applyNewPlayers(): void {
     //if (this.newPlayersAdded.length === 0) {
       //return;

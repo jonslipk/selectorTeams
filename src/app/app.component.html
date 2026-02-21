@@ -63,7 +63,11 @@
              <td colspan="2">
                   <div class="player-row">
                     <span class="player-name">{{player}}</span>
-                    <button (click)="removeNewPlayer(i)" class="btn-remove">✕</button>
+                    <div class="player-controls">
+                      <button (click)="moveRemainingUp(i)" [disabled]="i === 0" class="btn-move" aria-label="Mover para cima">▲</button>
+                      <button (click)="moveRemainingDown(i)" [disabled]="i === remainingPlayers.length - 1" class="btn-move" aria-label="Mover para baixo">▼</button>
+                      <button (click)="removeNewPlayer(i)" class="btn-remove">✕</button>
+                    </div>
                   </div>
                 </td>
             </tr>

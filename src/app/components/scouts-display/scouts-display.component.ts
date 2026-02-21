@@ -22,6 +22,11 @@ export class ScoutsDisplayComponent implements OnInit {
       // history display removed — actions retained in data but not shown here
   }
 
+  // Retorna uma cópia ordenada dos scouts por pontos (descendente)
+  get sortedScouts(): Scout[] {
+    return [...(this.scouts || [])].sort((a, b) => b.pontos - a.pontos);
+  }
+
 }
 
 export interface Scout {

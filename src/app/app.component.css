@@ -392,6 +392,27 @@
             flex: 1;
         }
 
+        .player-controls {
+          display: inline-flex;
+          gap: 8px;
+          align-items: center;
+        }
+
+        .btn-move {
+          background-color: #ffffff;
+          color: #333;
+          border: 1px solid #ccc;
+          padding: 6px 8px;
+          border-radius: 6px;
+          cursor: pointer;
+          font-size: 13px;
+        }
+
+        .btn-move:disabled {
+          opacity: 0.4;
+          cursor: not-allowed;
+        }
+
         .btn-remove {
             background-color: #ff6b6b;
             color: white;

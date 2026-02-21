@@ -98,6 +98,8 @@ export class TeamsDisplayComponent implements OnInit, OnDestroy {
   }
 
 
+
+
   toggleTimer(): void {
     if (this.isRunning) {
       this.pauseTimer();

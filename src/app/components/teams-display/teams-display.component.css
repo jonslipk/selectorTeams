@@ -17,6 +17,34 @@
   min-width: 300px;
 }
 
+.modal .team-players ul li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 0;
+}
+
+.modal .remaining-controls {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.modal .remaining-controls button {
+  padding: 6px 8px;
+  font-size: 12px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  background: white;
+  cursor: pointer;
+}
+
+.modal .remaining-controls button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 .display-container {
   padding: 20px;
 }
@@ -173,7 +201,7 @@
   border-radius: 8px;
   background: linear-gradient(135deg, #f0fff4 0%, #ffffff 100%);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
+  overflow: visible;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -233,8 +261,8 @@
   list-style: none;
   padding: 0;
   margin: 0;
-  max-height: 200px;
-  overflow-y: auto;
+  max-height: none;
+  overflow: visible;
 }
 
 .team-players li {
@@ -475,7 +503,8 @@
   }
 
   .team-players ul {
-    max-height: 180px;
+    max-height: none;
+    overflow: visible;
   }
 
   .team-players li {
@@ -657,7 +686,8 @@
   }
 
   .team-players ul {
-    max-height: 150px;
+    max-height: none;
+    overflow: visible;
   }
 
   .team-players li {
@@ -790,7 +820,8 @@
   }
 
   .team-players ul {
-    max-height: 140px;
+    max-height: none;
+    overflow: visible;
   }
 
   .team-players li {
