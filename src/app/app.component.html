@@ -45,6 +45,7 @@
         [playCount]="playerCount"
         [lastActionsByPlayer]="lastActionsByPlayer"
         (playerAction)="onPlayerAction($event)"
+        (removeAction)="onRemovePlayerAction($event)"
         (winnerDeclared)="onMatchWinner($event)"
         (drawDeclared)="onMatchDraw()">
       </app-teams-display>

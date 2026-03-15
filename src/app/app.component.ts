@@ -42,6 +42,47 @@ export class AppComponent {
     this.lastActionsByPlayer = {};
   }
 
+  onRemovePlayerAction(ev: { player: string; action: string }): void {
+    const { player, action } = ev;
+    
+    // Remove from visual badges
+    if (this.lastActionsByPlayer[player]) {
+      const index = this.lastActionsByPlayer[player].indexOf(action);
+      if (index > -1) {
+        this.lastActionsByPlayer[player].splice(index, 1);
+      }
+    }
+
+    // Find the scout and remove/undo points
+    const scout = this.scouts.find(s => s.player === player);
+    if (scout) {
+      const actionIndex = scout.actions.findIndex(a => a.action === action);
+      if (actionIndex > -1) {
+        scout.actions.splice(actionIndex, 1);
+        
+        // Deduct points based on action type
+        switch(action){
+          case 'gol':
+            scout.gols = Math.max(0, (scout.gols || 0) - 1);
+            scout.pontos -= 3;
+            break;
+          case 'ruim':
+            scout.pontos += 1;
+            break;
+          case 'contra':
+            scout.pontos += 2;
+            break;
+          case 'passe':
+            scout.assistencias = Math.max(0, (scout.assistencias || 0) - 1);
+            scout.pontos -= 2;
+            break;
+        }
+      }
+    }
+    
+    console.log('Action removed for', player, action, 'Updated scouts:', this.scouts);
+  }
+
   onGenerateTeams(): void {
     const playerCount = this.playerSelectionComponent.playerCount;
     const players = this.playerSelectionComponent.players;

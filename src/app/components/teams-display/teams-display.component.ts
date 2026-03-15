@@ -22,6 +22,7 @@ export class TeamsDisplayComponent implements OnInit, OnDestroy {
   @Input() lastActionsByPlayer: { [player: string]: string[] } = {};
   @Output() winnerDeclared: EventEmitter<Team> = new EventEmitter();
   @Output() drawDeclared: EventEmitter<void> = new EventEmitter();
+  @Output() removeAction: EventEmitter<{player: string, action: string}> = new EventEmitter();
 
   // Cronômetro
   timeRemaining: number = 420; // 7 minutos em segundos
@@ -95,6 +96,11 @@ export class TeamsDisplayComponent implements OnInit, OnDestroy {
   abrirModal(substituto:any) {
     this.playerModal = substituto;
     this.modalAberto = true;
+  }
+
+  removePlayerAction(player: string, action: string, event: Event): void {
+    event.stopPropagation();
+    this.removeAction.emit({ player, action });
   }
 
 
