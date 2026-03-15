@@ -53,6 +53,9 @@ export class AppComponent {
       }
     }
 
+    // Find the team and player's team to revert goals
+    const team = this.teams.find(t => t.players.includes(player));
+
     // Find the scout and remove/undo points
     const scout = this.scouts.find(s => s.player === player);
     if (scout) {
@@ -60,17 +63,26 @@ export class AppComponent {
       if (actionIndex > -1) {
         scout.actions.splice(actionIndex, 1);
         
-        // Deduct points based on action type
+        // Deduct points based on action type and revert team goals
         switch(action){
           case 'gol':
             scout.gols = Math.max(0, (scout.gols || 0) - 1);
             scout.pontos -= 3;
+            if (team) {
+              team.goals = Math.max(0, (team.goals || 0) - 1);
+            }
             break;
           case 'ruim':
             scout.pontos += 1;
             break;
           case 'contra':
             scout.pontos += 2;
+            if (team) {
+              const opposingTeam = this.teams.find(t => t !== team);
+              if (opposingTeam) {
+                opposingTeam.goals = Math.max(0, (opposingTeam.goals || 0) - 1);
+              }
+            }
             break;
           case 'passe':
             scout.assistencias = Math.max(0, (scout.assistencias || 0) - 1);
