@@ -74,9 +74,21 @@
   </div>
   <!-- Botão de Empate -->
   <div class="draw-button-section" *ngIf="teams.length > 0">
-    <button (click)="setDraw()" class="btn-draw" [class.active]="teams.length > 0 && teams[0]">
-      {{ teams.length > 0 && teams[0] ? '🤝 Empate Marcado' : '🤝 Marcar Empate' }}
+    <button (click)="confirmDrawAberto = true" class="btn-draw">
+      🤝 Marcar Empate
     </button>
+  </div>
+
+  <!-- Modal de confirmação de empate -->
+  <div class="modal-backdrop" *ngIf="confirmDrawAberto">
+    <div class="modal modal-confirm">
+      <h2>⚠️ Confirmar Empate</h2>
+      <p>Tem certeza que deseja marcar empate? Os times serão redistribuídos.</p>
+      <div class="modal-confirm-buttons">
+        <button (click)="setDraw(); confirmDrawAberto = false" class="btn-confirm-yes">✅ Confirmar</button>
+        <button (click)="confirmDrawAberto = false" class="btn-confirm-no">❌ Cancelar</button>
+      </div>
+    </div>
   </div>
   <div *ngIf="teams.length === 0" class="empty-state">
     <p>Nenhum time foi montado ainda. Acesse a aba "Seleção de Jogadores" para gerar times.</p>

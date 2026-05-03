@@ -1,20 +1,34 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { PlayerSelectionComponent } from './components/player-selection/player-selection.component';
+import { Team } from './components/teams-display/teams-display.component';
+import { StorageService } from './services/storage.service';
 
-interface Team {
-  name: string;
-  players: string[];
-  goalkeeper: string;
-  goals?: number;
-  isWinner?: boolean;
+interface Scout {
+  player: string;
+  pontos: number;
+  gols: number;
+  assistencias: number;
+  actions: { action: string; time: number }[];
 }
+
+interface GameState {
+  teams: Team[];
+  remainingPlayers: string[];
+  scouts: Scout[];
+  lastActionsByPlayer: { [player: string]: string[] };
+  activeTab: 'selection' | 'teams' | 'scouts';
+  playerCount: number;
+  allGoalkeepers: string[];
+}
+
+const GAME_STATE_KEY = 'gameState';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   @ViewChild(PlayerSelectionComponent) playerSelectionComponent!: PlayerSelectionComponent;
 
   title = 'select-teams-fut';
@@ -23,29 +37,67 @@ export class AppComponent {
   remainingTeams: Team[] = [];
   remainingPlayers: string[] = [];
   newPlayerInput: string = '';
-  playerCount: number = 0;
+  playerCount: number = 5;
   allGoalkeepers: string[] = [];
-  scouts: { player: string; pontos: number; gols: number; assistencias: number; actions: { action: string; time: number }[] }[] = [];
+  scouts: Scout[] = [];
   lastActionsByPlayer: { [player: string]: string[] } = {};
+
+  constructor(private storage: StorageService) {}
+
+  async ngOnInit(): Promise<void> {
+    const saved = await this.storage.load<GameState>(GAME_STATE_KEY);
+    if (saved) {
+      this.teams = saved.teams ?? [];
+      this.remainingPlayers = saved.remainingPlayers ?? [];
+      this.scouts = saved.scouts ?? [];
+      this.lastActionsByPlayer = saved.lastActionsByPlayer ?? {};
+      this.activeTab = saved.activeTab ?? 'selection';
+      this.playerCount = saved.playerCount ?? 0;
+      this.allGoalkeepers = saved.allGoalkeepers ?? [];
+    }
+  }
+
+  private saveGameState(): void {
+    const state: GameState = {
+      teams: this.teams,
+      remainingPlayers: this.remainingPlayers,
+      scouts: this.scouts,
+      lastActionsByPlayer: this.lastActionsByPlayer,
+      activeTab: this.activeTab,
+      playerCount: this.playerCount,
+      allGoalkeepers: this.allGoalkeepers,
+    };
+    this.storage.save(GAME_STATE_KEY, state);
+  }
 
   setActiveTab(tab: 'selection' | 'teams' | 'scouts'): void {
     this.activeTab = tab;
+    this.saveGameState();
   }
 
-  onMatchWinner(team: Team){
-    // clear local action badges when a winner is declared
+  onMatchWinner(ev: { winnerTeam: Team, teams: Team[], remainingPlayers: string[] }): void {
+    this.teams = ev.teams;
+    this.remainingPlayers = ev.remainingPlayers;
     this.lastActionsByPlayer = {};
+    this.saveGameState();
   }
 
-  onMatchDraw(){
-    // clear local action badges on draw
+  onMatchDraw(ev: { teams: Team[], remainingPlayers: string[] }): void {
+    this.teams = ev.teams;
+    this.remainingPlayers = ev.remainingPlayers;
     this.lastActionsByPlayer = {};
+    this.saveGameState();
+  }
+
+  onTeamsUpdated(ev: { teams: Team[], remainingPlayers: string[] }): void {
+    this.teams = ev.teams;
+    this.remainingPlayers = ev.remainingPlayers;
+    this.saveGameState();
   }
 
   onRemovePlayerAction(ev: { player: string; action: string }): void {
     const { player, action } = ev;
-    
-    // Remove from visual badges
+
     if (this.lastActionsByPlayer[player]) {
       const index = this.lastActionsByPlayer[player].indexOf(action);
       if (index > -1) {
@@ -53,24 +105,17 @@ export class AppComponent {
       }
     }
 
-    // Find the team and player's team to revert goals
     const team = this.teams.find(t => t.players.includes(player));
-
-    // Find the scout and remove/undo points
     const scout = this.scouts.find(s => s.player === player);
     if (scout) {
       const actionIndex = scout.actions.findIndex(a => a.action === action);
       if (actionIndex > -1) {
         scout.actions.splice(actionIndex, 1);
-        
-        // Deduct points based on action type and revert team goals
-        switch(action){
+        switch (action) {
           case 'gol':
             scout.gols = Math.max(0, (scout.gols || 0) - 1);
             scout.pontos -= 3;
-            if (team) {
-              team.goals = Math.max(0, (team.goals || 0) - 1);
-            }
+            if (team) team.goals = Math.max(0, (team.goals || 0) - 1);
             break;
           case 'ruim':
             scout.pontos += 1;
@@ -79,9 +124,7 @@ export class AppComponent {
             scout.pontos += 2;
             if (team) {
               const opposingTeam = this.teams.find(t => t !== team);
-              if (opposingTeam) {
-                opposingTeam.goals = Math.max(0, (opposingTeam.goals || 0) - 1);
-              }
+              if (opposingTeam) opposingTeam.goals = Math.max(0, (opposingTeam.goals || 0) - 1);
             }
             break;
           case 'passe':
@@ -91,8 +134,8 @@ export class AppComponent {
         }
       }
     }
-    
-    console.log('Action removed for', player, action, 'Updated scouts:', this.scouts);
+
+    this.saveGameState();
   }
 
   onGenerateTeams(): void {
@@ -101,17 +144,14 @@ export class AppComponent {
     const goalkeepers = this.playerSelectionComponent.goalkeepers;
     const headToHeadPlayers = this.playerSelectionComponent.headToHeadPlayers;
 
-    // Armazenar para uso posterior
     this.playerCount = playerCount;
     this.allGoalkeepers = [...goalkeepers];
 
-    // Validações
     if (playerCount <= 0) {
       alert('Por favor, defina a quantidade de jogadores por time');
       return;
     }
 
-    // Validar se há pelo menos 2 goleiros para 2 times
     if (goalkeepers.length < 2) {
       alert('Você precisa de pelo menos 2 goleiros para montar 2 times');
       return;
@@ -121,132 +161,45 @@ export class AppComponent {
     const regularPlayers = players.filter(p => !headToHeadPlayers.has(p));
     const availableGoalkeepers = [...goalkeepers];
 
-    // FORÇAR APENAS 2 TIMES
     const numTeams = 2;
-
-    // Embaralhar jogadores regulares
     const shuffledRegularPlayers = this.shuffleArray(regularPlayers);
     const shuffledGoalkeepers = this.shuffleArray(availableGoalkeepers);
 
-    // Inicializar 2 times
     this.teams = [];
     for (let i = 0; i < numTeams; i++) {
-      this.teams.push({
-        name: `Time ${i + 1}`,
-        players: [],
-        goalkeeper: shuffledGoalkeepers[i]
-      });
+      this.teams.push({ name: `Time ${i + 1}`, players: [], goalkeeper: shuffledGoalkeepers[i] });
     }
 
-    // Distribuir cabeças de chave primeiro (um por time, de forma distribuída)
     let teamIndex = 0;
     for (const headToHead of this.shuffleArray(headToHeadArray)) {
-      if (teamIndex >= this.teams.length) {
-        teamIndex = 0;
-      }
+      if (teamIndex >= this.teams.length) teamIndex = 0;
       this.teams[teamIndex].players.push(headToHead);
       teamIndex++;
     }
 
-    // Distribuir jogadores regulares de forma randômica
     let currentTeamIndex = 0;
     for (const player of shuffledRegularPlayers) {
       if (this.teams[currentTeamIndex].players.length < playerCount) {
         this.teams[currentTeamIndex].players.push(player);
       }
-
-      // Passar para próximo time quando atingir limite
       if (this.teams[currentTeamIndex].players.length === playerCount) {
         currentTeamIndex++;
-        if (currentTeamIndex >= this.teams.length) {
-          currentTeamIndex = 0;
-        }
+        if (currentTeamIndex >= this.teams.length) currentTeamIndex = 0;
       }
     }
 
-    // Calcular jogadores restantes
     this.calculateRemainingPlayers();
-
-    // Mudar para aba de times
     this.activeTab = 'teams';
-    console.log('Times gerados:', this.teams);
-    console.log('Jogadores restantes inicialmente:', this.remainingPlayers);
-    console.log('Times restantes:', this.remainingTeams);
+    this.saveGameState();
   }
 
   private calculateRemainingPlayers(): void {
     const usedPlayers = new Set<string>();
-
-    // Coletar todos os jogadores usados
     for (const team of this.teams) {
-      for (const player of team.players) {
-        usedPlayers.add(player);
-      }
+      for (const player of team.players) usedPlayers.add(player);
     }
-
-    // Encontrar jogadores não usados (incluir novos jogadores adicionados)
     const allPlayers = [...this.playerSelectionComponent.players];
     this.remainingPlayers = allPlayers.filter(p => !usedPlayers.has(p));
-
-    // Montar times com os jogadores restantes
-    //this.buildRemainingTeams();
-  }
-
-  private buildRemainingTeams(): void {
-    if (this.remainingPlayers.length === 0) {
-      this.remainingTeams = [];
-      return;
-    }
-
-    const playerCount = this.playerSelectionComponent.playerCount;
-    const remainingGoalkeepers = this.playerSelectionComponent.goalkeepers.filter(
-      gk => !this.teams.some(team => team.goalkeeper === gk)
-    );
-
-    // Se não há goleiros suficientes, não forma times restantes
-    if (remainingGoalkeepers.length === 0) {
-      this.remainingTeams = [];
-      return;
-    }
-
-    // Calcular quantos times podem ser formados com os restantes
-    const totalRemaining = this.remainingPlayers.length + remainingGoalkeepers.length;
-    const numRemainingTeams = Math.floor(totalRemaining / (playerCount + 1));
-
-    if (numRemainingTeams === 0) {
-      this.remainingTeams = [];
-      return;
-    }
-
-    // Embaralhar jogadores e goleiros restantes
-    const shuffledRemaining = this.shuffleArray(this.remainingPlayers);
-    const shuffledRemainingGK = this.shuffleArray(remainingGoalkeepers);
-
-    // Inicializar times restantes
-    this.remainingTeams = [];
-    for (let i = 0; i < numRemainingTeams; i++) {
-      this.remainingTeams.push({
-        name: `Time Reserve ${i + 1}`,
-        players: [],
-        goalkeeper: shuffledRemainingGK[i]
-      });
-    }
-
-    // Distribuir jogadores restantes
-    let currentTeamIndex = 0;
-    for (const player of shuffledRemaining) {
-      if (this.remainingTeams[currentTeamIndex].players.length < playerCount) {
-        this.remainingTeams[currentTeamIndex].players.push(player);
-      }
-
-      // Passar para próximo time quando atingir limite
-      if (this.remainingTeams[currentTeamIndex].players.length === playerCount) {
-        currentTeamIndex++;
-        if (currentTeamIndex >= this.remainingTeams.length) {
-          break;
-        }
-      }
-    }
   }
 
   private shuffleArray<T>(array: T[]): T[] {
@@ -262,25 +215,22 @@ export class AppComponent {
     return this.playerSelectionComponent?.headToHeadPlayers || new Set();
   }
 
-  onPlayerAction(ev: { player: string; action: string }){
+  onPlayerAction(ev: { player: string; action: string }): void {
     const { player, action } = ev;
     let scout = this.scouts.find(s => s.player === player);
     const now = Date.now();
-    if (!scout){
+    if (!scout) {
       scout = { player, pontos: 0, gols: 0, assistencias: 0, actions: [] };
       this.scouts.push(scout);
     }
 
-    // record action in history
     scout.actions.push({ action, time: now });
 
-    // also keep local action badges per player (persist across tabs)
     if (!this.lastActionsByPlayer[player]) this.lastActionsByPlayer[player] = [];
     this.lastActionsByPlayer[player].push(action);
     if (this.lastActionsByPlayer[player].length > 8) this.lastActionsByPlayer[player].shift();
 
-    // apply scoring rules
-    switch(action){
+    switch (action) {
       case 'gol':
         scout.gols = (scout.gols || 0) + 1;
         scout.pontos += 3;
@@ -297,9 +247,7 @@ export class AppComponent {
         break;
     }
 
-    // Keep points non-negative if you prefer
-    // scout.pontos = Math.max(0, scout.pontos);
-    console.log('scouts updated', this.scouts);
+    this.saveGameState();
   }
 
   getEmptySet(): Set<string> {
@@ -308,101 +256,65 @@ export class AppComponent {
 
   addNewPlayer(): void {
     const playerName = this.newPlayerInput.trim();
-
-    // Adicionar diretamente à lista de jogadores sem time
+    if (!playerName) return;
     this.remainingPlayers.push(playerName);
     this.newPlayerInput = '';
-
-    // Reconstruir times restantes se necessário
-    //this.buildRemainingTeams();
+    this.saveGameState();
   }
 
   removeNewPlayer(index: number): void {
-    //const playerToRemove = this.newPlayersAdded[index];
-    //this.newPlayersAdded.splice(index, 1);
-
-    // Remover também de remainingPlayers
-    //const remainingIndex = this.remainingPlayers.indexOf(playerToRemove);
     if (this.remainingPlayers.hasOwnProperty(index)) {
       this.remainingPlayers.splice(index, 1);
+      this.saveGameState();
     }
-
-    // Reconstruir times restantes
-    //this.buildRemainingTeams();
   }
 
-  // Move um jogador da lista de remainingPlayers uma posição para cima
   moveRemainingUp(index: number): void {
     if (index <= 0 || index >= this.remainingPlayers.length) return;
     const arr = this.remainingPlayers;
     [arr[index - 1], arr[index]] = [arr[index], arr[index - 1]];
+    this.saveGameState();
   }
 
-  // Move um jogador da lista de remainingPlayers uma posição para baixo
   moveRemainingDown(index: number): void {
     if (index < 0 || index >= this.remainingPlayers.length - 1) return;
     const arr = this.remainingPlayers;
     [arr[index], arr[index + 1]] = [arr[index + 1], arr[index]];
+    this.saveGameState();
   }
 
   applyNewPlayers(): void {
-    //if (this.newPlayersAdded.length === 0) {
-      //return;
-    //}
-
-    // Adicionar novos jogadores à lista original
     const playerCount = this.playerSelectionComponent.playerCount;
     const allPlayers = [...this.playerSelectionComponent.players];
     const allGoalkeepers = this.playerSelectionComponent.goalkeepers;
 
-    // Validar se há pelo menos 2 goleiros
     if (allGoalkeepers.length < 2) {
       alert('Você precisa de pelo menos 2 goleiros para montar 2 times');
       return;
     }
 
-    // FORÇAR APENAS 2 TIMES
     const numTeams = 2;
-
-    // Reorganizar todos os jogadores (existentes + novos)
     const shuffledAllPlayers = this.shuffleArray(allPlayers);
     const shuffledGoalkeepers = this.shuffleArray(allGoalkeepers);
 
-    // Reinicializar 2 times
     this.teams = [];
     for (let i = 0; i < numTeams; i++) {
-      this.teams.push({
-        name: `Time ${i + 1}`,
-        players: [],
-        goalkeeper: shuffledGoalkeepers[i]
-      });
+      this.teams.push({ name: `Time ${i + 1}`, players: [], goalkeeper: shuffledGoalkeepers[i] });
     }
 
-    // Distribuir todos os jogadores
     let currentTeamIndex = 0;
     for (const player of shuffledAllPlayers) {
       if (this.teams[currentTeamIndex].players.length < playerCount) {
         this.teams[currentTeamIndex].players.push(player);
       }
-
-      // Passar para próximo time quando atingir limite
       if (this.teams[currentTeamIndex].players.length === playerCount) {
         currentTeamIndex++;
-        if (currentTeamIndex >= this.teams.length) {
-          currentTeamIndex = 0;
-        }
+        if (currentTeamIndex >= this.teams.length) currentTeamIndex = 0;
       }
     }
 
-    // Recalcular jogadores restantes
     this.calculateRemainingPlayers();
-
-    // Limpar entrada
-    //this.newPlayersAdded = [];
     this.newPlayerInput = '';
-
-    console.log('Times redistribuídos com novos jogadores:', this.teams);
+    this.saveGameState();
   }
-
-
 }
