@@ -47,7 +47,8 @@
         (playerAction)="onPlayerAction($event)"
         (removeAction)="onRemovePlayerAction($event)"
         (winnerDeclared)="onMatchWinner($event)"
-        (drawDeclared)="onMatchDraw()">
+        (drawDeclared)="onMatchDraw($event)"
+        (teamsUpdated)="onTeamsUpdated($event)">
       </app-teams-display>
 
 

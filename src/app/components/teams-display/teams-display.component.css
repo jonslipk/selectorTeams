@@ -458,6 +458,50 @@
   margin: 0;
 }
 
+.modal-confirm p {
+  color: #555;
+  margin: 0 0 20px 0;
+  font-size: 15px;
+}
+
+.modal-confirm-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.btn-confirm-yes {
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-confirm-yes:hover {
+  background-color: #218838;
+}
+
+.btn-confirm-no {
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-confirm-no:hover {
+  background-color: #c82333;
+}
+
 /* ===================================
    MEDIA QUERIES - RESPONSIVIDADE
    =================================== */
