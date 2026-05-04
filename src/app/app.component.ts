@@ -8,6 +8,7 @@ interface Scout {
   pontos: number;
   gols: number;
   assistencias: number;
+  vitorias?: number;
   actions: { action: string; time: number }[];
 }
 
@@ -79,6 +80,18 @@ export class AppComponent implements OnInit {
     this.teams = ev.teams;
     this.remainingPlayers = ev.remainingPlayers;
     this.lastActionsByPlayer = {};
+    this.scouts.forEach(s => s.actions = []);
+
+    for (const player of ev.winnerTeam.players) {
+      let scout = this.scouts.find(s => s.player === player);
+      if (!scout) {
+        scout = { player, pontos: 0, gols: 0, assistencias: 0, actions: [] };
+        this.scouts.push(scout);
+      }
+      scout.pontos += 1;
+      scout.vitorias = (scout.vitorias || 0) + 1;
+    }
+
     this.saveGameState();
   }
 
@@ -86,6 +99,7 @@ export class AppComponent implements OnInit {
     this.teams = ev.teams;
     this.remainingPlayers = ev.remainingPlayers;
     this.lastActionsByPlayer = {};
+    this.scouts.forEach(s => s.actions = []);
     this.saveGameState();
   }
 
@@ -228,7 +242,6 @@ export class AppComponent implements OnInit {
 
     if (!this.lastActionsByPlayer[player]) this.lastActionsByPlayer[player] = [];
     this.lastActionsByPlayer[player].push(action);
-    if (this.lastActionsByPlayer[player].length > 8) this.lastActionsByPlayer[player].shift();
 
     switch (action) {
       case 'gol':

@@ -6,6 +6,7 @@
         <tr>
           <th>Jogador</th>
           <th>Pontos</th>
+          <th>Vitórias</th>
           <th>Gols</th>
           <th>Assistências</th>
         </tr>
@@ -15,6 +16,7 @@
           <tr>
             <td data-label="Jogador">{{ s.player }}</td>
             <td data-label="Pontos">{{ s.pontos }}</td>
+            <td data-label="Vitórias">{{ s.vitorias || 0 }}</td>
             <td data-label="Gols">{{ s.gols }}</td>
             <td data-label="Assistências">{{ s.assistencias }}</td>
           </tr>
