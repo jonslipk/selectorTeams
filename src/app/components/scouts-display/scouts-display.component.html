@@ -9,6 +9,8 @@
           <th>Vitórias</th>
           <th>Gols</th>
           <th>Assistências</th>
+          <th>J. Ruins</th>
+          <th>G. Contra</th>
         </tr>
       </thead>
       <tbody>
@@ -19,6 +21,8 @@
             <td data-label="Vitórias">{{ s.vitorias || 0 }}</td>
             <td data-label="Gols">{{ s.gols }}</td>
             <td data-label="Assistências">{{ s.assistencias }}</td>
+            <td data-label="J. Ruins">{{ s.jogadasRuins || 0 }}</td>
+            <td data-label="G. Contra">{{ s.golsContra || 0 }}</td>
           </tr>
         </ng-container>
       </tbody>

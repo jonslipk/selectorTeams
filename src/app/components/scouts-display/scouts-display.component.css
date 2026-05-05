@@ -44,11 +44,14 @@
   box-sizing: border-box;
 }
 
-/* Explicit column widths to guarantee alignment (player column reduced) */
-.scouts-table thead th:first-child{ width: 40%; }
-.scouts-table thead th:nth-child(2){ width: 20%; }
-.scouts-table thead th:nth-child(3){ width: 20%; }
-.scouts-table thead th:nth-child(4){ width: 20%; }
+/* Explicit column widths to guarantee alignment */
+.scouts-table thead th:first-child{ width: 25%; }
+.scouts-table thead th:nth-child(2){ width: 13%; }
+.scouts-table thead th:nth-child(3){ width: 12%; }
+.scouts-table thead th:nth-child(4){ width: 12%; }
+.scouts-table thead th:nth-child(5){ width: 12%; }
+.scouts-table thead th:nth-child(6){ width: 13%; }
+.scouts-table thead th:nth-child(7){ width: 13%; }
 
 .scouts-table thead th{
 	position: sticky;

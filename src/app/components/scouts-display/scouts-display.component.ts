@@ -34,6 +34,8 @@ export interface Scout {
   pontos: number;
   gols: number;
   assistencias: number;
+  jogadasRuins?: number;
+  golsContra?: number;
   vitorias?: number;
   actions?: { action: string; time: number }[];
 }

@@ -8,6 +8,8 @@ interface Scout {
   pontos: number;
   gols: number;
   assistencias: number;
+  jogadasRuins?: number;
+  golsContra?: number;
   vitorias?: number;
   actions: { action: string; time: number }[];
 }
@@ -174,9 +176,11 @@ export class AppComponent implements OnInit {
             break;
           case 'ruim':
             scout.pontos += 1;
+            scout.jogadasRuins = Math.max(0, (scout.jogadasRuins || 0) - 1);
             break;
           case 'contra':
             scout.pontos += 2;
+            scout.golsContra = Math.max(0, (scout.golsContra || 0) - 1);
             if (team) {
               const opposingTeam = this.teams.find(t => t !== team);
               if (opposingTeam) opposingTeam.goals = Math.max(0, (opposingTeam.goals || 0) - 1);
@@ -291,9 +295,11 @@ export class AppComponent implements OnInit {
         break;
       case 'ruim':
         scout.pontos -= 1;
+        scout.jogadasRuins = (scout.jogadasRuins || 0) + 1;
         break;
       case 'contra':
         scout.pontos -= 2;
+        scout.golsContra = (scout.golsContra || 0) + 1;
         break;
       case 'passe':
         scout.assistencias = (scout.assistencias || 0) + 1;
