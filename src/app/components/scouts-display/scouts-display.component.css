@@ -69,6 +69,19 @@
 	transition: background .12s ease;
 }
 
+.scouts-table tbody tr.row-best,
+.scouts-table tbody tr.row-best:nth-child(odd),
+.scouts-table tbody tr.row-best:nth-child(even) {
+  background: #fffbcc;
+  font-weight: 700;
+}
+
+.scouts-table tbody tr.row-worst,
+.scouts-table tbody tr.row-worst:nth-child(odd),
+.scouts-table tbody tr.row-worst:nth-child(even) {
+  background: #ffe5e5;
+}
+
 .scouts-table tbody tr:nth-child(odd){
 	background: var(--row-odd);
 }

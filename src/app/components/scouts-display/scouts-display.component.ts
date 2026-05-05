@@ -22,9 +22,16 @@ export class ScoutsDisplayComponent implements OnInit {
       // history display removed — actions retained in data but not shown here
   }
 
-  // Retorna uma cópia ordenada dos scouts por pontos (descendente)
   get sortedScouts(): Scout[] {
     return [...(this.scouts || [])].sort((a, b) => b.pontos - a.pontos);
+  }
+
+  get maxPontos(): number {
+    return Math.max(...(this.scouts || []).map(s => s.pontos));
+  }
+
+  get minPontos(): number {
+    return Math.min(...(this.scouts || []).map(s => s.pontos));
   }
 
 }
