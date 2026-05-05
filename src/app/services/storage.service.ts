@@ -31,6 +31,16 @@ export class StorageService {
     });
   }
 
+  async clear(): Promise<void> {
+    const db = await this.openDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(this.STORE, 'readwrite');
+      tx.objectStore(this.STORE).clear();
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+  }
+
   async load<T>(key: string): Promise<T | null> {
     const db = await this.openDB();
     return new Promise((resolve, reject) => {

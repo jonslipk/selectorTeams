@@ -77,10 +77,18 @@
   gap: 8px;
 }
 
-.btn-draw:hover {
+.btn-draw:hover:not(:disabled) {
   background-color: #667eea;
   color: white;
   transform: scale(1.05);
+}
+
+.btn-draw:disabled {
+  background-color: #f0f0f0;
+  color: #aaa;
+  border-color: #ccc;
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .btn-draw.active {

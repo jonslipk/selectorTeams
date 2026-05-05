@@ -589,6 +589,75 @@
   }
 }
 
+/* Aba Configuração */
+.config-section {
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 480px;
+}
+
+.config-section h2 {
+  margin: 0 0 8px 0;
+  color: #333;
+}
+
+.config-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.config-item label {
+  font-weight: 600;
+  color: #444;
+  font-size: 15px;
+}
+
+.config-input {
+  padding: 10px 14px;
+  border: 2px solid #007bff;
+  border-radius: 6px;
+  font-size: 16px;
+  width: 100%;
+  max-width: 200px;
+  transition: border-color 0.2s;
+}
+
+.config-input:focus {
+  outline: none;
+  border-color: #0056b3;
+}
+
+.config-danger {
+  margin-top: 16px;
+  border-top: 1px solid #dee2e6;
+  padding-top: 20px;
+}
+
+.btn-reset-db {
+  padding: 10px 20px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-reset-db:hover {
+  background-color: #b02a37;
+}
+
+.reset-db-erro {
+  color: #dc3545;
+  font-size: 14px;
+  margin: 6px 0 0 0;
+}
+
 /* Ultra-pequenos (menos de 380px) */
 @media (max-width: 380px) {
   .header h1 {

@@ -44,11 +44,14 @@
   box-sizing: border-box;
 }
 
-/* Explicit column widths to guarantee alignment (player column reduced) */
-.scouts-table thead th:first-child{ width: 40%; }
-.scouts-table thead th:nth-child(2){ width: 20%; }
-.scouts-table thead th:nth-child(3){ width: 20%; }
-.scouts-table thead th:nth-child(4){ width: 20%; }
+/* Explicit column widths to guarantee alignment */
+.scouts-table thead th:first-child{ width: 25%; }
+.scouts-table thead th:nth-child(2){ width: 13%; }
+.scouts-table thead th:nth-child(3){ width: 12%; }
+.scouts-table thead th:nth-child(4){ width: 12%; }
+.scouts-table thead th:nth-child(5){ width: 12%; }
+.scouts-table thead th:nth-child(6){ width: 13%; }
+.scouts-table thead th:nth-child(7){ width: 13%; }
 
 .scouts-table thead th{
 	position: sticky;
@@ -64,6 +67,19 @@
 
 .scouts-table tbody tr{
 	transition: background .12s ease;
+}
+
+.scouts-table tbody tr.row-best,
+.scouts-table tbody tr.row-best:nth-child(odd),
+.scouts-table tbody tr.row-best:nth-child(even) {
+  background: #fffbcc;
+  font-weight: 700;
+}
+
+.scouts-table tbody tr.row-worst,
+.scouts-table tbody tr.row-worst:nth-child(odd),
+.scouts-table tbody tr.row-worst:nth-child(even) {
+  background: #ffe5e5;
 }
 
 .scouts-table tbody tr:nth-child(odd){

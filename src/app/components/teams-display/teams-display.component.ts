@@ -20,7 +20,9 @@ export class TeamsDisplayComponent implements OnInit, OnDestroy {
   @Input() teams: Team[] = [];
   @Input() headToHeadPlayers: Set<string> = new Set();
   @Input() remainingPlayers: string[] = [];
-  @Input() playCount: number = 0
+  @Input() playCount: number = 0;
+  @Input() gameTimeSecs: number = 420;
+  @Input() goalLimit: number = 2;
   @Output() playerAction: EventEmitter<{player: string, action: string}> = new EventEmitter();
   @Input() lastActionsByPlayer: { [player: string]: string[] } = {};
   @Output() winnerDeclared: EventEmitter<{ winnerTeam: Team, teams: Team[], remainingPlayers: string[] }> = new EventEmitter();
@@ -29,8 +31,9 @@ export class TeamsDisplayComponent implements OnInit, OnDestroy {
   @Output() teamsUpdated: EventEmitter<{ teams: Team[], remainingPlayers: string[] }> = new EventEmitter();
 
   // Cronômetro
-  timeRemaining: number = 420; // 7 minutos em segundos
+  timeRemaining: number = 420;
   isRunning: boolean = false;
+  timeUp: boolean = false;
   private intervalId: any;
   playersTeam: string[] = []
   goalKeepersTeam: string[] = []
@@ -44,6 +47,8 @@ export class TeamsDisplayComponent implements OnInit, OnDestroy {
     const saved = await this.storage.load<{ timeRemaining: number }>(TIMER_KEY);
     if (saved) {
       this.timeRemaining = saved.timeRemaining;
+    } else {
+      this.timeRemaining = this.gameTimeSecs;
     }
   }
 
@@ -160,6 +165,7 @@ export class TeamsDisplayComponent implements OnInit, OnDestroy {
         this.storage.save(TIMER_KEY, { timeRemaining: this.timeRemaining });
       } else {
         this.pauseTimer();
+        this.timeUp = true;
         this.playAlarm();
       }
     }, 1000);
@@ -175,7 +181,8 @@ export class TeamsDisplayComponent implements OnInit, OnDestroy {
 
   resetTimer(): void {
     this.pauseTimer();
-    this.timeRemaining = 420;
+    this.timeRemaining = this.gameTimeSecs;
+    this.timeUp = false;
     this.storage.save(TIMER_KEY, { timeRemaining: this.timeRemaining });
   }
 
@@ -194,16 +201,16 @@ export class TeamsDisplayComponent implements OnInit, OnDestroy {
     this.onWinnerSelected(team);
     this.teams.forEach(t => t.isWinner = false);
     this.teams.forEach(t => t.goals = 0);
+    this.resetTimer();
     this.winnerDeclared.emit({ winnerTeam: team, teams: this.teams, remainingPlayers: this.remainingPlayers });
   }
 
   canSetWinner(team: Team): boolean {
-    // Encontrar o outro time
     const otherTeam = this.teams.find(t => t !== team);
     if (!otherTeam) return false;
-
-    // Só permite marcar vencedor se este time tiver mais gols que o outro
-    return this.getGoals(team) > this.getGoals(otherTeam);
+    const hasMoreGoals = this.getGoals(team) > this.getGoals(otherTeam);
+    if (this.timeUp) return hasMoreGoals;
+    return this.getGoals(team) >= this.goalLimit && hasMoreGoals;
   }
 
   setDraw(): void {
@@ -255,6 +262,7 @@ export class TeamsDisplayComponent implements OnInit, OnDestroy {
 
       this.playersTeam = []
 
+      this.resetTimer();
       console.log("teams gerados depois do empate", this.teams)
       this.drawDeclared.emit({ teams: this.teams, remainingPlayers: this.remainingPlayers });
 

@@ -8,6 +8,9 @@ interface Scout {
   pontos: number;
   gols: number;
   assistencias: number;
+  jogadasRuins?: number;
+  golsContra?: number;
+  vitorias?: number;
   actions: { action: string; time: number }[];
 }
 
@@ -16,9 +19,11 @@ interface GameState {
   remainingPlayers: string[];
   scouts: Scout[];
   lastActionsByPlayer: { [player: string]: string[] };
-  activeTab: 'selection' | 'teams' | 'scouts';
+  activeTab: 'selection' | 'teams' | 'scouts' | 'config';
   playerCount: number;
   allGoalkeepers: string[];
+  gameTimeSecs: number;
+  goalLimit: number;
 }
 
 const GAME_STATE_KEY = 'gameState';
@@ -32,7 +37,7 @@ export class AppComponent implements OnInit {
   @ViewChild(PlayerSelectionComponent) playerSelectionComponent!: PlayerSelectionComponent;
 
   title = 'select-teams-fut';
-  activeTab: 'selection' | 'teams' | 'scouts' = 'selection';
+  activeTab: 'selection' | 'teams' | 'scouts' | 'config' = 'selection';
   teams: Team[] = [];
   remainingTeams: Team[] = [];
   remainingPlayers: string[] = [];
@@ -41,6 +46,8 @@ export class AppComponent implements OnInit {
   allGoalkeepers: string[] = [];
   scouts: Scout[] = [];
   lastActionsByPlayer: { [player: string]: string[] } = {};
+  gameTimeSecs: number = 420;
+  goalLimit: number = 2;
 
   constructor(private storage: StorageService) {}
 
@@ -54,6 +61,8 @@ export class AppComponent implements OnInit {
       this.activeTab = saved.activeTab ?? 'selection';
       this.playerCount = saved.playerCount ?? 0;
       this.allGoalkeepers = saved.allGoalkeepers ?? [];
+      this.gameTimeSecs = saved.gameTimeSecs ?? 420;
+      this.goalLimit = saved.goalLimit ?? 2;
     }
   }
 
@@ -66,11 +75,46 @@ export class AppComponent implements OnInit {
       activeTab: this.activeTab,
       playerCount: this.playerCount,
       allGoalkeepers: this.allGoalkeepers,
+      gameTimeSecs: this.gameTimeSecs,
+      goalLimit: this.goalLimit,
     };
     this.storage.save(GAME_STATE_KEY, state);
   }
 
-  setActiveTab(tab: 'selection' | 'teams' | 'scouts'): void {
+  saveConfig(): void {
+    this.saveGameState();
+  }
+
+  resetDbModalAberto = false;
+  resetDbSenha = '';
+  resetDbErro = false;
+
+  abrirResetDb(): void {
+    this.resetDbSenha = '';
+    this.resetDbErro = false;
+    this.resetDbModalAberto = true;
+  }
+
+  async confirmarResetDb(): Promise<void> {
+    if (this.resetDbSenha !== 'jonas123') {
+      this.resetDbErro = true;
+      return;
+    }
+    await this.storage.clear();
+    this.teams = [];
+    this.remainingPlayers = [];
+    this.scouts = [];
+    this.lastActionsByPlayer = {};
+    this.allGoalkeepers = [];
+    this.playerCount = 5;
+    this.gameTimeSecs = 420;
+    this.goalLimit = 2;
+    this.activeTab = 'selection';
+    this.resetDbModalAberto = false;
+    this.resetDbSenha = '';
+  }
+
+  setActiveTab(tab: 'selection' | 'teams' | 'scouts' | 'config'): void {
     this.activeTab = tab;
     this.saveGameState();
   }
@@ -79,6 +123,18 @@ export class AppComponent implements OnInit {
     this.teams = ev.teams;
     this.remainingPlayers = ev.remainingPlayers;
     this.lastActionsByPlayer = {};
+    this.scouts.forEach(s => s.actions = []);
+
+    for (const player of ev.winnerTeam.players) {
+      let scout = this.scouts.find(s => s.player === player);
+      if (!scout) {
+        scout = { player, pontos: 0, gols: 0, assistencias: 0, actions: [] };
+        this.scouts.push(scout);
+      }
+      scout.pontos += 1;
+      scout.vitorias = (scout.vitorias || 0) + 1;
+    }
+
     this.saveGameState();
   }
 
@@ -86,6 +142,7 @@ export class AppComponent implements OnInit {
     this.teams = ev.teams;
     this.remainingPlayers = ev.remainingPlayers;
     this.lastActionsByPlayer = {};
+    this.scouts.forEach(s => s.actions = []);
     this.saveGameState();
   }
 
@@ -119,9 +176,11 @@ export class AppComponent implements OnInit {
             break;
           case 'ruim':
             scout.pontos += 1;
+            scout.jogadasRuins = Math.max(0, (scout.jogadasRuins || 0) - 1);
             break;
           case 'contra':
             scout.pontos += 2;
+            scout.golsContra = Math.max(0, (scout.golsContra || 0) - 1);
             if (team) {
               const opposingTeam = this.teams.find(t => t !== team);
               if (opposingTeam) opposingTeam.goals = Math.max(0, (opposingTeam.goals || 0) - 1);
@@ -228,7 +287,6 @@ export class AppComponent implements OnInit {
 
     if (!this.lastActionsByPlayer[player]) this.lastActionsByPlayer[player] = [];
     this.lastActionsByPlayer[player].push(action);
-    if (this.lastActionsByPlayer[player].length > 8) this.lastActionsByPlayer[player].shift();
 
     switch (action) {
       case 'gol':
@@ -237,9 +295,11 @@ export class AppComponent implements OnInit {
         break;
       case 'ruim':
         scout.pontos -= 1;
+        scout.jogadasRuins = (scout.jogadasRuins || 0) + 1;
         break;
       case 'contra':
         scout.pontos -= 2;
+        scout.golsContra = (scout.golsContra || 0) + 1;
         break;
       case 'passe':
         scout.assistencias = (scout.assistencias || 0) + 1;
