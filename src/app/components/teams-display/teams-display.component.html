@@ -74,7 +74,7 @@
   </div>
   <!-- Botão de Empate -->
   <div class="draw-button-section" *ngIf="teams.length > 0">
-    <button (click)="confirmDrawAberto = true" class="btn-draw">
+    <button (click)="confirmDrawAberto = true" class="btn-draw" [disabled]="!timeUp || teams[0] && teams[1] && getGoals(teams[0]) !== getGoals(teams[1])">
       🤝 Marcar Empate
     </button>
   </div>

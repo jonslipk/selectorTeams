@@ -17,9 +17,11 @@ interface GameState {
   remainingPlayers: string[];
   scouts: Scout[];
   lastActionsByPlayer: { [player: string]: string[] };
-  activeTab: 'selection' | 'teams' | 'scouts';
+  activeTab: 'selection' | 'teams' | 'scouts' | 'config';
   playerCount: number;
   allGoalkeepers: string[];
+  gameTimeSecs: number;
+  goalLimit: number;
 }
 
 const GAME_STATE_KEY = 'gameState';
@@ -33,7 +35,7 @@ export class AppComponent implements OnInit {
   @ViewChild(PlayerSelectionComponent) playerSelectionComponent!: PlayerSelectionComponent;
 
   title = 'select-teams-fut';
-  activeTab: 'selection' | 'teams' | 'scouts' = 'selection';
+  activeTab: 'selection' | 'teams' | 'scouts' | 'config' = 'selection';
   teams: Team[] = [];
   remainingTeams: Team[] = [];
   remainingPlayers: string[] = [];
@@ -42,6 +44,8 @@ export class AppComponent implements OnInit {
   allGoalkeepers: string[] = [];
   scouts: Scout[] = [];
   lastActionsByPlayer: { [player: string]: string[] } = {};
+  gameTimeSecs: number = 420;
+  goalLimit: number = 2;
 
   constructor(private storage: StorageService) {}
 
@@ -55,6 +59,8 @@ export class AppComponent implements OnInit {
       this.activeTab = saved.activeTab ?? 'selection';
       this.playerCount = saved.playerCount ?? 0;
       this.allGoalkeepers = saved.allGoalkeepers ?? [];
+      this.gameTimeSecs = saved.gameTimeSecs ?? 420;
+      this.goalLimit = saved.goalLimit ?? 2;
     }
   }
 
@@ -67,11 +73,46 @@ export class AppComponent implements OnInit {
       activeTab: this.activeTab,
       playerCount: this.playerCount,
       allGoalkeepers: this.allGoalkeepers,
+      gameTimeSecs: this.gameTimeSecs,
+      goalLimit: this.goalLimit,
     };
     this.storage.save(GAME_STATE_KEY, state);
   }
 
-  setActiveTab(tab: 'selection' | 'teams' | 'scouts'): void {
+  saveConfig(): void {
+    this.saveGameState();
+  }
+
+  resetDbModalAberto = false;
+  resetDbSenha = '';
+  resetDbErro = false;
+
+  abrirResetDb(): void {
+    this.resetDbSenha = '';
+    this.resetDbErro = false;
+    this.resetDbModalAberto = true;
+  }
+
+  async confirmarResetDb(): Promise<void> {
+    if (this.resetDbSenha !== 'jonas123') {
+      this.resetDbErro = true;
+      return;
+    }
+    await this.storage.clear();
+    this.teams = [];
+    this.remainingPlayers = [];
+    this.scouts = [];
+    this.lastActionsByPlayer = {};
+    this.allGoalkeepers = [];
+    this.playerCount = 5;
+    this.gameTimeSecs = 420;
+    this.goalLimit = 2;
+    this.activeTab = 'selection';
+    this.resetDbModalAberto = false;
+    this.resetDbSenha = '';
+  }
+
+  setActiveTab(tab: 'selection' | 'teams' | 'scouts' | 'config'): void {
     this.activeTab = tab;
     this.saveGameState();
   }

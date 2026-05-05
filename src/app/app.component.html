@@ -23,6 +23,12 @@
       (click)="setActiveTab('scouts')">
       🏆 Scouts
     </button>
+    <button
+      class="tab-button"
+      [class.active]="activeTab === 'config'"
+      (click)="setActiveTab('config')">
+      ⚙️ Configuração
+    </button>
   </nav>
 
   <!-- Conteúdo das Abas -->
@@ -44,6 +50,8 @@
         [remainingPlayers]="remainingPlayers"
         [playCount]="playerCount"
         [lastActionsByPlayer]="lastActionsByPlayer"
+        [gameTimeSecs]="gameTimeSecs"
+        [goalLimit]="goalLimit"
         (playerAction)="onPlayerAction($event)"
         (removeAction)="onRemovePlayerAction($event)"
         (winnerDeclared)="onMatchWinner($event)"
@@ -104,6 +112,58 @@
           <p>Nenhum scout registrado ainda. Selecione ações em 'Times Montados' para começar a registrar.</p>
         </div>
       </ng-template>
+    </div>
+
+    <!-- Aba: Configuração -->
+    <div class="tab-pane" [hidden]="activeTab !== 'config'">
+      <div class="config-section">
+        <h2>⚙️ Configuração da Partida</h2>
+
+        <div class="config-item">
+          <label for="gameTime">⏱️ Tempo de jogo (minutos)</label>
+          <input
+            id="gameTime"
+            type="number"
+            min="1"
+            [ngModel]="gameTimeSecs / 60"
+            (ngModelChange)="gameTimeSecs = $event * 60; saveConfig()"
+            class="config-input">
+        </div>
+
+        <div class="config-item">
+          <label for="goalLimit">⚽ Gols para finalizar a partida</label>
+          <input
+            id="goalLimit"
+            type="number"
+            min="1"
+            [(ngModel)]="goalLimit"
+            (ngModelChange)="saveConfig()"
+            class="config-input">
+        </div>
+
+        <div class="config-item config-danger">
+          <button (click)="abrirResetDb()" class="btn-reset-db">🗑️ Resetar banco de dados</button>
+        </div>
+      </div>
+
+      <!-- Modal senha reset -->
+      <div class="modal-backdrop" *ngIf="resetDbModalAberto">
+        <div class="modal">
+          <h2>🔒 Confirmar Reset</h2>
+          <p>Digite a senha para apagar todos os dados:</p>
+          <input
+            type="password"
+            [(ngModel)]="resetDbSenha"
+            placeholder="Senha"
+            class="config-input"
+            (keyup.enter)="confirmarResetDb()">
+          <p class="reset-db-erro" *ngIf="resetDbErro">Senha incorreta.</p>
+          <div class="modal-confirm-buttons">
+            <button (click)="confirmarResetDb()" class="btn-confirm-yes">✅ Confirmar</button>
+            <button (click)="resetDbModalAberto = false" class="btn-confirm-no">❌ Cancelar</button>
+          </div>
+        </div>
+      </div>
     </div>
   </main>
 </div>
