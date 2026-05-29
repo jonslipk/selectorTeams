@@ -4,6 +4,7 @@
     <table class="scouts-table">
       <thead>
         <tr>
+          <th>#</th>
           <th>Jogador</th>
           <th>Pontos</th>
           <th>Vitórias</th>
@@ -14,8 +15,9 @@
         </tr>
       </thead>
       <tbody>
-        <ng-container *ngFor="let s of sortedScouts">
+        <ng-container *ngFor="let s of sortedScouts; let i = index">
           <tr [class.row-best]="s.pontos === maxPontos" [class.row-worst]="s.pontos === minPontos && s.pontos !== maxPontos">
+            <td data-label="#">{{ i + 1 }}</td>
             <td data-label="Jogador">{{ s.player }}</td>
             <td data-label="Pontos">{{ s.pontos }}</td>
             <td data-label="Vitórias">{{ s.vitorias || 0 }}</td>

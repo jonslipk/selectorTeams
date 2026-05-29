@@ -65,22 +65,35 @@
         <table class="remaining-players-table">
           <thead>
             <tr>
+              <th>#</th>
               <th>Jogador</th>
+              <th></th>
             </tr>
           </thead>
           <tbody id="playersList">
-            <tr *ngFor="let player of remainingPlayers; let i = index" [class.highlight]="i < playerCount">
-             <td colspan="2">
+            <ng-container *ngFor="let player of remainingPlayers; let i = index">
+              <!-- Linha separadora de grupo -->
+              <tr *ngIf="i % playerCount === 0" class="group-header-row">
+                <td colspan="3" class="group-header">
+                  🏃 Time {{ 3 + Math.floor(i / playerCount) }}
+                </td>
+              </tr>
+              <tr [class.highlight]="i < playerCount">
+                <td class="col-num">{{ (i % playerCount) + 1 }}</td>
+                <td>
                   <div class="player-row">
                     <span class="player-name">{{player}}</span>
-                    <div class="player-controls">
-                      <button (click)="moveRemainingUp(i)" [disabled]="i === 0" class="btn-move" aria-label="Mover para cima">▲</button>
-                      <button (click)="moveRemainingDown(i)" [disabled]="i === remainingPlayers.length - 1" class="btn-move" aria-label="Mover para baixo">▼</button>
-                      <button (click)="removeNewPlayer(i)" class="btn-remove">✕</button>
-                    </div>
                   </div>
                 </td>
-            </tr>
+                <td>
+                  <div class="player-controls">
+                    <button (click)="moveRemainingUp(i)" [disabled]="i === 0" class="btn-move" aria-label="Mover para cima">▲</button>
+                    <button (click)="moveRemainingDown(i)" [disabled]="i === remainingPlayers.length - 1" class="btn-move" aria-label="Mover para baixo">▼</button>
+                    <button (click)="removeNewPlayer(i)" class="btn-remove">✕</button>
+                  </div>
+                </td>
+              </tr>
+            </ng-container>
 
           </tbody>
         </table>
@@ -104,12 +117,11 @@
     </div>
     <div class="tab-pane" [hidden]="activeTab !== 'scouts'">
       <ng-container *ngIf="scouts && scouts.length > 0; else emptyScouts">
-        <app-scouts-display [scouts]="scouts">
-        </app-scouts-display>
+        <app-scouts-display [scouts]="scouts"></app-scouts-display>
       </ng-container>
       <ng-template #emptyScouts>
         <div class="empty-state">
-          <p>Nenhum scout registrado ainda. Selecione ações em 'Times Montados' para começar a registrar.</p>
+          <p>Gere os times primeiro para ver o ranking dos jogadores.</p>
         </div>
       </ng-template>
     </div>
