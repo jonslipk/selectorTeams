@@ -36,10 +36,10 @@ export class TeamsDisplayComponent implements OnInit, OnDestroy {
   timeUp: boolean = false;
   private intervalId: any;
   playersTeam: string[] = []
-  goalKeepersTeam: string[] = []
   playerModal: any;
   modalAberto = false;
   confirmDrawAberto = false;
+  confirmResetTimerAberto = false;
 
   constructor(private storage: StorageService) {}
 
@@ -92,7 +92,7 @@ export class TeamsDisplayComponent implements OnInit, OnDestroy {
     // reset select to default (if present)
     try{ event.target.value = ''; }catch(e){}
 
-    const team = this.teams.find(t => t.players.includes(player));
+    const team = this.teams.find(t => t.players.includes(player) || t.goalkeeper === player);
     // Increment goals for the player's team when action is 'gol'
     if (action === 'gol') {
       if (team) {
@@ -118,20 +118,42 @@ export class TeamsDisplayComponent implements OnInit, OnDestroy {
     }
   }
 
-  changePlayer(playerValue:any){
-    this.teams.forEach(team => {
-                        const index = team.players.findIndex(p => p === this.playerModal);
+  promoverGoleiro(team: Team, player: string): void {
+    const goleirAtual = team.goalkeeper;
+    team.goalkeeper = player;
+    const idx = team.players.indexOf(player);
+    if (idx > -1) team.players.splice(idx, 1, goleirAtual);
+    this.teamsUpdated.emit({ teams: this.teams, remainingPlayers: this.remainingPlayers });
+  }
 
-                        if (index !== -1) {
-                          team.players.splice(index, 1, playerValue);
-                          this.remainingPlayers.splice(this.remainingPlayers.indexOf(playerValue),1)
-                        }
+  changePlayer(playerValue: any) {
+    let trocou = false;
+
+    // Verifica se é substituição de goleiro
+    this.teams.forEach(team => {
+      if (team.goalkeeper === this.playerModal) {
+        team.goalkeeper = playerValue;
+        this.remainingPlayers.splice(this.remainingPlayers.indexOf(playerValue), 1);
+        trocou = true;
+      }
     });
 
-  this.remainingPlayers.push(this.playerModal);
-  this.modalAberto = false;
-  this.teamsUpdated.emit({ teams: this.teams, remainingPlayers: this.remainingPlayers });
-}
+    // Substituição de jogador de campo
+    if (!trocou) {
+      this.teams.forEach(team => {
+        const index = team.players.findIndex(p => p === this.playerModal);
+        if (index !== -1) {
+          team.players.splice(index, 1, playerValue);
+          this.remainingPlayers.splice(this.remainingPlayers.indexOf(playerValue), 1);
+          trocou = true;
+        }
+      });
+    }
+
+    if (trocou) this.remainingPlayers.push(this.playerModal);
+    this.modalAberto = false;
+    this.teamsUpdated.emit({ teams: this.teams, remainingPlayers: this.remainingPlayers });
+  }
 
   abrirModal(substituto:any) {
     this.playerModal = substituto;
@@ -214,27 +236,26 @@ export class TeamsDisplayComponent implements OnInit, OnDestroy {
   }
 
   setDraw(): void {
+    const fixedGoalkeepers = this.teams.map(t => t.goalkeeper);
 
     this.teams.forEach(t => t.isWinner = false);
-    this.teams.forEach(t => t.players.forEach(p => this.playersTeam.push(p)))
-    this.teams.forEach(t => this.goalKeepersTeam.push(t.goalkeeper))
+    this.teams.forEach(t => t.players.forEach(p => this.playersTeam.push(p)));
 
     const shuffledAllPlayers = this.shuffleArray(this.playersTeam);
-    const shuffledGoalkeepers = this.shuffleArray(this.goalKeepersTeam);
 
     for (const player of shuffledAllPlayers) {
       this.remainingPlayers.push(player);
     }
 
-     const numTeams = 2;
+    const numTeams = 2;
 
-    // Reinicializar 2 times
+    // Reinicializar 2 times mantendo os goleiros fixos
     this.teams = [];
     for (let i = 0; i < numTeams; i++) {
       this.teams.push({
         name: `Time ${i + 1}`,
         players: [],
-        goalkeeper: shuffledGoalkeepers[i]
+        goalkeeper: fixedGoalkeepers[i]
       });
     }
 
@@ -295,48 +316,33 @@ export class TeamsDisplayComponent implements OnInit, OnDestroy {
   }
 
   onWinnerSelected(winnerTeam: Team): void {
-
-    this.teams.forEach(t => this.goalKeepersTeam.push(t.goalkeeper))
-    // Encontrar o time que perdeu
     const loserTeam = this.teams.find(t => t.name !== winnerTeam.name);
 
-    if (!loserTeam) {
-      console.log('Erro: Não encontrado time perdedor');
-      return;
-    }
+    if (!loserTeam) return;
 
-    // Adicionar os jogadores do time que perdeu ao final da lista de jogadores sem time
+    const loserGoalkeeper = loserTeam.goalkeeper;
+
     this.remainingPlayers.push(...loserTeam.players);
 
-    // Verificar se consegue montar novo time (apenas verificar jogadores)
-    if (this.remainingPlayers.length < 5) {
-      console.log('ERRO: Insuficientes jogadores');
-      // Não consegue montar novo time
+    if (this.remainingPlayers.length < this.playCount) {
       this.teams = [winnerTeam];
-      console.log('Não há jogadores suficientes para formar novo time');
       return;
     }
 
-    // Montar novo time com os PRIMEIROS jogadores da lista (ordem)
-    const newTeamPlayers = this.remainingPlayers.splice(0, 5);
-    // Usar um goleiro diferente do Time 1 (vencedor)
-    const newGoalkeeper = this.goalKeepersTeam.find(gk => gk !== winnerTeam.goalkeeper) || this.goalKeepersTeam[0];
+    const newTeamPlayers = this.remainingPlayers.splice(0, this.playCount);
 
     const newTeam: Team = {
       name: 'Time 2',
       players: newTeamPlayers,
-      goalkeeper: newGoalkeeper
+      goalkeeper: loserGoalkeeper
     };
 
-    // Atualizar times
     winnerTeam.name = 'Time 1';
     this.teams = [winnerTeam, newTeam];
 
-    // Resetar gols e status
     this.teams.forEach(t => {
       t.goals = 0;
       t.isWinner = false;
     });
-
   }
 }

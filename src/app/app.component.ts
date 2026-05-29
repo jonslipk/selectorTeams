@@ -63,6 +63,7 @@ export class AppComponent implements OnInit {
       this.allGoalkeepers = saved.allGoalkeepers ?? [];
       this.gameTimeSecs = saved.gameTimeSecs ?? 420;
       this.goalLimit = saved.goalLimit ?? 2;
+      this.ensureAllPlayersInScouts();
     }
   }
 
@@ -162,7 +163,7 @@ export class AppComponent implements OnInit {
       }
     }
 
-    const team = this.teams.find(t => t.players.includes(player));
+    const team = this.teams.find(t => t.players.includes(player) || t.goalkeeper === player);
     const scout = this.scouts.find(s => s.player === player);
     if (scout) {
       const actionIndex = scout.actions.findIndex(a => a.action === action);
@@ -248,6 +249,7 @@ export class AppComponent implements OnInit {
     }
 
     this.calculateRemainingPlayers();
+    this.ensureAllPlayersInScouts();
     this.activeTab = 'teams';
     this.saveGameState();
   }
@@ -259,6 +261,21 @@ export class AppComponent implements OnInit {
     }
     const allPlayers = [...this.playerSelectionComponent.players];
     this.remainingPlayers = allPlayers.filter(p => !usedPlayers.has(p));
+  }
+
+  private ensureAllPlayersInScouts(): void {
+    const allPlayers = new Set<string>();
+    for (const team of this.teams) {
+      for (const p of team.players) allPlayers.add(p);
+      allPlayers.add(team.goalkeeper);
+    }
+    for (const p of this.remainingPlayers) allPlayers.add(p);
+
+    for (const player of allPlayers) {
+      if (!this.scouts.find(s => s.player === player)) {
+        this.scouts.push({ player, pontos: 0, gols: 0, assistencias: 0, actions: [] });
+      }
+    }
   }
 
   private shuffleArray<T>(array: T[]): T[] {
@@ -314,11 +331,14 @@ export class AppComponent implements OnInit {
     return new Set();
   }
 
+  Math = Math;
+
   addNewPlayer(): void {
     const playerName = this.newPlayerInput.trim();
     if (!playerName) return;
     this.remainingPlayers.push(playerName);
     this.newPlayerInput = '';
+    this.ensureAllPlayersInScouts();
     this.saveGameState();
   }
 

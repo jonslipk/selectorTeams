@@ -186,6 +186,26 @@
   transform: scale(1.2);
 }
 
+.col-num {
+  text-align: center;
+  font-weight: 700;
+  color: #888;
+  width: 32px;
+}
+
+.group-header-row td {
+  padding: 0;
+}
+
+.group-header {
+  background-color: #667eea;
+  color: white;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 6px 12px !important;
+  letter-spacing: 0.5px;
+}
+
 /* Destaque para os primeiros jogadores que podem montar um time */
 .remaining-players-table tbody tr.highlight {
   background-color: #fff3cd;

@@ -8,7 +8,7 @@
         <button (click)="toggleTimer()" [class.playing]="isRunning" class="btn-timer-toggle">
           {{ isRunning ? '⏸️ Pausar' : '▶️ Iniciar' }}
         </button>
-        <button (click)="resetTimer()" class="btn-timer-reset">🔄 Resetar</button>
+        <button (click)="confirmResetTimerAberto = true" class="btn-timer-reset">🔄 Resetar</button>
       </div>
     </div>
   </div>
@@ -41,7 +41,23 @@
         </div>
         <div class="team-goalkeeper">
           <strong>🧤 Goleiro:</strong>
-          <p>{{ team.goalkeeper }}</p>
+          <div class="goalkeeper-row">
+            <span class="player-name">{{ team.goalkeeper }}</span>
+            <span class="action-badges" *ngIf="lastActionsByPlayer[team.goalkeeper]?.length">
+              <span *ngFor="let a of lastActionsByPlayer[team.goalkeeper]" class="action-badge" [title]="a">
+                {{ getActionIcon(a) }}
+                <button class="btn-remove-action" (click)="removePlayerAction(team.goalkeeper, a, $event)" title="Remover ação">✕</button>
+              </span>
+            </span>
+            <select (change)="selectDetails(team.goalkeeper, $event)">
+              <option value="">--</option>
+              <option value="gol">⚽ Gol</option>
+              <option value="ruim">⚠️ Jogada ruim</option>
+              <option value="contra">❌ Gol contra</option>
+              <option value="passe">🅰️ Assistência</option>
+            </select>
+            <button (click)="abrirModal(team.goalkeeper)" title="Substituir goleiro">🔄</button>
+          </div>
         </div>
         <div class="team-players">
           <strong>👥 Jogadores:</strong>
@@ -63,6 +79,7 @@
                 <option value="passe">🅰️ Assistência</option>
               </select>
               <button (click)="abrirModal(player)">🔄</button>
+              <button (click)="promoverGoleiro(team, player)" title="Tornar goleiro">🧤</button>
             </li>
           </ul>
         </div>
@@ -77,6 +94,18 @@
     <button (click)="confirmDrawAberto = true" class="btn-draw" [disabled]="!timeUp || teams[0] && teams[1] && getGoals(teams[0]) !== getGoals(teams[1])">
       🤝 Marcar Empate
     </button>
+  </div>
+
+  <!-- Modal de confirmação de reset do timer -->
+  <div class="modal-backdrop" *ngIf="confirmResetTimerAberto">
+    <div class="modal modal-confirm">
+      <h2>⏱️ Resetar Tempo</h2>
+      <p>Tem certeza que deseja resetar o cronômetro para 7:00?</p>
+      <div class="modal-confirm-buttons">
+        <button (click)="resetTimer(); confirmResetTimerAberto = false" class="btn-confirm-yes">✅ Confirmar</button>
+        <button (click)="confirmResetTimerAberto = false" class="btn-confirm-no">❌ Cancelar</button>
+      </div>
+    </div>
   </div>
 
   <!-- Modal de confirmação de empate -->
